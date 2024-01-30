@@ -9,7 +9,7 @@
     <style>
         body {
             background-color: #F2F1F0;
-            color: #2B302B;
+            color: #323732;
         }
 
         body.dark-mode {
@@ -107,7 +107,7 @@
         .work-module {
             background-color: #ffffff;
             max-width: 1211px;
-            margin: 20px auto;
+            margin: 40px auto;
             border-radius: 24px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             display: flex;
@@ -133,7 +133,7 @@
             font-size: 28px;
             font-style: normal;
             font-weight: 700;
-            color: #2B302B;
+            color: #363936;
             line-height: 38px;
             margin: 20px 46px 0px;
             letter-spacing: -0.28px;
@@ -144,7 +144,7 @@
             font-size: 16px;
             font-style: normal;
             font-weight: 400;
-            color: #2B302B;
+            color: #363936;
             columns: 25em auto;
             column-gap: 2em;
             margin: 10px 46px 46px;
@@ -156,7 +156,7 @@
             font-size: 20px;
             font-style: normal;
             font-weight: 700;
-            color: #2B302B;
+            color: #363936;
             margin: 0px 46px 0px;
             line-height: 21px;
         }
@@ -209,7 +209,7 @@
         // This function will check the time and toggle dark mode based on daylight hours
         function toggleDarkMode() {
             var hour = new Date().getHours();
-            var isDayTime = hour > 6 && hour < 17;
+            var isDayTime = hour > 8 && hour < 17;
 
             // If it's not day time, add the dark-mode class to the body
             if (!isDayTime) {
@@ -237,9 +237,9 @@
             var descriptionElement = document.createElement('p');
 
             // Set content for elements
-            titleElement.textContent = title;
+            titleElement.innerHTML = title;
             imageElement.src = imagePath;
-            headlineElement.textContent = headline;
+            headlineElement.innerHTML = headline;
             // Set HTML content for elements
             descriptionElement.innerHTML = description;
 
@@ -288,6 +288,19 @@
             "Making it a bit easier for people in a dire situation",
             "In collaboration with Health Solutions and the national quality register for eating disorders (RiksÄT), I was part of the FEDiCS project. Our aim was to develop a more user-friendly solution for the self-assessment forms required by patients seeking treatment for eating disorders. Previously, these assessments were conducted on a computer the clinic. The process could take over an hour and the exciting solution did not provide any visual cues on how much was left or any support functionality. Our new solution enabled patients to complete these forms more conveniently and privately and in their own phase via a mobile solution. <br>The data from the forms is then integrated into a quality register, and also serving as a crucial decision-support tool for the clinic.",
         );
+        displayWork(
+            "Hurm&aring;rdu.nu (F&ouml;rsta Linjen)",
+            "img/ImgHurMarDu.png",
+            "Make young people to feel safe and comfortable to contact F&ouml;rsta Linjen",
+            "In collaboration with ExperioLab, Ocean Observations developed an online platform aimed at encouraging teenagers with mental health issues to seek timely help. The project involved close cooperation with the client team as well as the target audience—teenagers themselves. My role encompassed conceptual development, shaping the brand's personality and creating its user interface.",
+        );
+        displayWork(
+            "Detectivio",
+            "img/ImgDetectivio.png",
+            "A fast and non-contact vital signs assessment tool",
+            "In 2017, Detectivio was founded by a medical doctor and a computer science engineer, embarking on a journey to revolutionize the measurement of vital signs – pulse, respiratory rate, blood oxygen level, blood pressure, and body temperature – fundamental features of human physiology. The venture leveraged advanced sensors, optics, digital signal processing, computer vision, machine learning, and artificial neural networks, all aimed at using modern technology to facilitate, streamline, and broaden the assessment of health. <br>A team from Ocean assisted Detectivio with the formulation of mission and vision statements, as well as creating illustrations for their investor pitch deck. As part of this team, my role involved facilitating workshops and developing concept illustrations and workflow visualizations.",
+        );
+
 
     </script>
 </body>
