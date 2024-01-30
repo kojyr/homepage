@@ -83,6 +83,7 @@
             font-size: 28px;
             font-style: normal;
             font-weight: 400;
+            color: #2B302B;
             line-height: 38px;
             margin: 20px 46px 0px;
             letter-spacing: -0.28px;
@@ -93,6 +94,7 @@
             font-size: 16px;
             font-style: normal;
             font-weight: 400;
+            color: #2B302B;
             columns: 25em auto;
             margin: 10px 46px 46px;
             line-height: 21px;
@@ -103,6 +105,7 @@
             font-size: 20px;
             font-style: normal;
             font-weight: 700;
+            color: #2B302B;
             margin: 10px 46px 0px;
             line-height: 21px;
         }
@@ -144,7 +147,7 @@
         // This function will check the time and toggle dark mode based on daylight hours
         function toggleDarkMode() {
             var hour = new Date().getHours();
-            var isDayTime = hour > 6 && hour < 16;
+            var isDayTime = hour > 6 && hour < 17;
 
             // If it's not day time, add the dark-mode class to the body
             if (!isDayTime) {
