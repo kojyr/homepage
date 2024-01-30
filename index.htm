@@ -47,7 +47,8 @@
             letter-spacing: -0.2px;
         }
 
-        .BodyLarge {
+        .BodyLarge,
+        .link {
             font-family: 'Barlow', sans-serif;
             font-size: 20px;
             font-style: normal;
@@ -67,7 +68,19 @@
         }
 
         .work-module {
-            background-color: #fff;
+            background-color: #ffffff;
+            max-width: 1211px;
+            margin: 20px auto;
+            border-radius: 24px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            display: flex;
+            /* This line sets the display mode to flex */
+            flex-direction: column;
+            /* This line makes the children stack vertically */
+        }
+
+        .work-module.dark-mode {
+            background-color: #F2F1F0;
             max-width: 1211px;
             margin: 20px auto;
             border-radius: 24px;
@@ -145,10 +158,15 @@
     </div>
     <div id="workContainer"></div>
     <div class="container">
-        <h3>Get in touch!</h3>
-<br>
+        <h3>Get in touch!<br></h3>
+    </div>
+    <div class="container">
         <p class="BodyLarge">I&rsquo;m always interested in new projects and opportunities. If you&rsquo;d like to
             get in touch, please feel free to reach out.</p>
+    </div>
+    <div class="container">
+        <p class="link"><a href="https://www.linkedin.com/in/olle-str%C3%B6mdahl-627a19" target="_blank">Linked in</a>
+        </p>
     </div>
     <script>
         // This function will check the time and toggle dark mode based on daylight hours
