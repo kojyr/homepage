@@ -73,10 +73,13 @@
         .work-module {
             background-color: #fff;
             margin: 20px auto;
-            max-width: 1211px;
-            padding: 8px 0;
+            padding: 20px;
             border-radius: 8px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            display: flex;
+            /* This line sets the display mode to flex */
+            flex-direction: column;
+            /* This line makes the children stack vertically */
         }
 
         .work-title {
@@ -102,7 +105,8 @@
             width: 100%;
             height: auto;
             /* Maintain aspect ratio */
-            margin-top: 20px;
+            margin-bottom: 20px;
+            /* Add space between the image and the description */
         }
     </style>
 
@@ -138,6 +142,7 @@
             // Create elements for the module
             var module = document.createElement('div');
             var titleElement = document.createElement('h2');
+            var headlinelement = document.createElement('h3');
             var descriptionElement = document.createElement('p');
             var imageElement = document.createElement('img');
 
@@ -154,8 +159,9 @@
 
             // Append elements to the module
             module.appendChild(titleElement);
-            module.appendChild(descriptionElement);
             module.appendChild(imageElement);
+            module.appendChild(headlineElement);
+            module.appendChild(descriptionElement);
 
             // Append module to the container
             workContainer.appendChild(module);
