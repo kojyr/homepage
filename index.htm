@@ -52,6 +52,17 @@
             color: #e0e0e0;
             /* Slightly lighter color on hover in dark mode */
         }
+        body.dark-mode a:active {
+            color: #e0e0e0;
+            /* Even darker color when the link is clicked, change as needed */
+        }
+
+        /* Link color for visited links */
+        body.dark-mode a:visited {
+            color: #e0e0e0;
+            /* Same color for visited links, change if you want a different color */
+        }
+
 
 
         h1 {
@@ -116,10 +127,10 @@
             /* This line makes the children stack vertically */
         }
 
-        .work-module.dark-mode {
+        body.dark-mode .work-module {
             background-color: #F2F1F0;
             max-width: 1211px;
-            margin: 20px auto;
+            margin: 40px auto;
             border-radius: 24px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             display: flex;
@@ -135,7 +146,7 @@
             font-weight: 600;
             color: #363936;
             line-height: 38px;
-            margin: 20px 46px 0px;
+            margin: 30px 46px 0px;
             letter-spacing: -0.28px;
         }
 
@@ -307,9 +318,21 @@
             "A fast and non-contact vital signs assessment tool",
             "In 2017, Detectivio was founded by a medical doctor and a computer science engineer, embarking on a journey to revolutionize the measurement of vital signs – pulse, respiratory rate, blood oxygen level, blood pressure, and body temperature – fundamental features of human physiology. The venture leveraged advanced sensors, optics, digital signal processing, computer vision, machine learning, and artificial neural networks, all aimed at using modern technology to facilitate, streamline, and broaden the assessment of health. <br>A team from Ocean assisted Detectivio with the formulation of mission and vision statements, as well as creating illustrations for their investor pitch deck. As part of this team, my role involved facilitating workshops and developing concept illustrations and workflow visualizations.",
         );
+        displayWork(
+            "QiuzRR",
+            "img/ImgQuizrr.png",
+            "Strengthening textile workers rights in China and Bangladesh",
+            "At Ocean, in collaboration with the startup QuizRR, we developed a digital game designed to educate factory workers in China and Bangladesh about their rights, while simultaneously strengthening the competitiveness of both factories and buyers. I played a key role in shaping the visual aesthetics and interface of the game, as well as the website where buyers and factories converge.",
+        );
+        displayWork(
+            "Altitude22",
+            "img/ImgAltitude22.png",
+            "Coaching executives",
+            "As part of Altitude 22's endeavour to launch a new coaching service for international executives, Ocean Observations was tasked with creating a mobile-optimized platform to streamline communication between coaches and their clients. <br> My role was comprehensive, involving the conception of the brand identity, as well as designing the website and mobile app interface. The platform features functionalities such as to-do lists, goal tracking, and a booking calendar, effectively enhancing client-coach interactions and organizational efficiency.",
+        );
+
 
 
     </script>
 </body>
-
 </html>
