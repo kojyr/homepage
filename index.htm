@@ -52,14 +52,14 @@
             line-height: 32px;
         }
 
-        .BodySmall {
+        /* .BodySmall {
             font-family: 'Barlow', sans-serif;
             font-size: 16px;
             font-style: normal;
             font-weight: 400;
             margin: 0;
             line-height: 21px;
-        }
+        } */
 
         .container {
             display: flex;
@@ -72,9 +72,10 @@
 
         .work-module {
             background-color: #fff;
+            max-width: 1211px;
             margin: 20px auto;
-            padding: 20px;
-            border-radius: 8px;
+            /* padding: 20px; */
+            border-radius: 24px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             display: flex;
             /* This line sets the display mode to flex */
@@ -86,9 +87,9 @@
             font-family: 'Barlow', sans-serif;
             font-size: 28px;
             font-style: normal;
-            font-weight: 700;
+            font-weight: 400;
             line-height: 38px;
-            margin: 0;
+            margin: 20px 46px 0px;
             letter-spacing: -0.28px;
         }
 
@@ -97,7 +98,16 @@
             font-size: 16px;
             font-style: normal;
             font-weight: 400;
-            margin: 0;
+            margin: 10px 46px 46px;
+            line-height: 21px;
+        }
+
+        .headline {
+            font-family: 'Barlow', sans-serif;
+            font-size: 20px;
+            font-style: normal;
+            font-weight: 700;
+            margin: 10px 46px 0px;
             line-height: 21px;
         }
 
@@ -130,32 +140,35 @@
             to my heart though, is creating user experiences that resonates with the end users through Service Design
             and Design Thinking processes.
             <br>
-            Below are some works that I'm particularly proud of:TEST
+            Below are some works that I'm particularly proud of:TEST TEST TEST
         </p>
     </div>
     <div id="workContainer"></div>
     <script>
         // This function will create and append a DisplayWork module to the workContainer
-        function displayWork(title, description, imagePath) {
+        function displayWork(title, imagePath, headline, description) {
             var workContainer = document.getElementById('workContainer');
 
             // Create elements for the module
             var module = document.createElement('div');
             var titleElement = document.createElement('h2');
-            var headlinelement = document.createElement('h3');
-            var descriptionElement = document.createElement('p');
             var imageElement = document.createElement('img');
+            var headlineElement = document.createElement('headline');
+            var descriptionElement = document.createElement('p');
 
             // Set content for elements
             titleElement.textContent = title;
-            descriptionElement.textContent = description;
             imageElement.src = imagePath;
+            headlineElement.textContent = headline;
+            descriptionElement.textContent = description;
 
             // Add classes for styling
             module.classList.add('work-module');
             titleElement.classList.add('work-title');
-            descriptionElement.classList.add('BodySmall');
             imageElement.classList.add('work-image');
+            headlineElement.classList.add('headline');
+            descriptionElement.classList.add('BodySmall');
+
 
             // Append elements to the module
             module.appendChild(titleElement);
@@ -170,10 +183,18 @@
         // Example call to displayWork function
         // You would call this for each project you want to display
         // Replace 'path-to-image.jpg' with the path to your project image
-        displayWork("Elsa Science", "Elsa provides a comprehensive Rheumatic care platform consisting of two main components: a self-care patient app, and a SaaS clinical dashboard that visualises the patients disease activity and therapeutic response. I've been involved in various part of the development of the platform and recently with a focus on the development of the Clinical Dashboard. In collaboration with patients and rheumatologists from Sweden and the United States we have developed a solution that meet the specific demands of the American and Swedish healthcare system. I've gained in-depth knowledge of diverse methods for measuring disease activity, the concept of value based care, how EHRs are used and the API standards for sharing patient data across platforms, financial reimbursement models and other complexities related to chronic disease management in the SWE/US healthcare system.",
-            "img/ImgElsa.png");
-        displayWork("Ingen ska ha Hepatit C", "In collaboration with MSD and other partners, I contributed to a vital project aimed at eradicating Hepatitis C in Sweden. Our goal was to develop a solution that covered the whole chain of care for individuals at risk of carrying the virus, particularly targeting populations with lower trust in conventional healthcare, such as active or former drug users.<br>My role involved creating a mobile-friendly solution that encompassed the entire process from an initial screening questionnaire to blood tests and virtual doctor appointments, culminating in treatment. The project was challenging with many partners contributing to the chain of care and it required designing an interface that was not only user-friendly but also sensitive to the unique needs and concerns of the target demographic.",
-            "img/ImgHepatitC.png");
+        displayWork(
+            "Elsa Science",
+            "img/ImgElsa.png",
+            "Supporting Early and Sustained Remission of Rheumatic Diseases",
+            "Elsa provides a comprehensive Rheumatic care platform consisting of two main components: a self-care patient app, and a SaaS clinical dashboard that visualises the patients disease activity and therapeutic response. I've been involved in various part of the development of the platform and recently with a focus on the development of the Clinical Dashboard. In collaboration with patients and rheumatologists from Sweden and the United States we have developed a solution that meet the specific demands of the American and Swedish healthcare system. I've gained in-depth knowledge of diverse methods for measuring disease activity, the concept of value based care, how EHRs are used and the API standards for sharing patient data across platforms, financial reimbursement models and other complexities related to chronic disease management in the SWE/US healthcare system.",
+        );
+        displayWork(
+            "Ingen ska ha Hepatit C",
+            "img/ImgHepatitC.png",
+            "How do we get people with low trust in healthcare to get their Hepatitis C cured?",
+            "In collaboration with MSD and other partners, I contributed to a vital project aimed at eradicating Hepatitis C in Sweden. Our goal was to develop a solution that covered the whole chain of care for individuals at risk of carrying the virus, particularly targeting populations with lower trust in conventional healthcare, such as active or former drug users.<br>My role involved creating a mobile-friendly solution that encompassed the entire process from an initial screening questionnaire to blood tests and virtual doctor appointments, culminating in treatment. The project was challenging with many partners contributing to the chain of care and it required designing an interface that was not only user-friendly but also sensitive to the unique needs and concerns of the target demographic.",
+        );
     </script>
 </body>
 
