@@ -9,8 +9,12 @@
     <style>
         body {
             background-color: #F2F1F0;
-            font-family: 'Barlow', sans-serif;
             color: #2B302B;
+        }
+
+        body.dark-mode {
+            background-color: #2B302B;
+            color: #F2F1F0;
         }
 
         h1 {
@@ -52,14 +56,6 @@
             line-height: 32px;
         }
 
-        /* .BodySmall {
-            font-family: 'Barlow', sans-serif;
-            font-size: 16px;
-            font-style: normal;
-            font-weight: 400;
-            margin: 0;
-            line-height: 21px;
-        } */
 
         .container {
             display: flex;
@@ -74,7 +70,6 @@
             background-color: #fff;
             max-width: 1211px;
             margin: 20px auto;
-            /* padding: 20px; */
             border-radius: 24px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             display: flex;
@@ -98,6 +93,7 @@
             font-size: 16px;
             font-style: normal;
             font-weight: 400;
+            columns: 25em auto;
             margin: 10px 46px 46px;
             line-height: 21px;
         }
@@ -145,6 +141,25 @@
     </div>
     <div id="workContainer"></div>
     <script>
+        // This function will check the time and toggle dark mode based on daylight hours
+        function toggleDarkMode() {
+            var hour = new Date().getHours();
+            var isDayTime = hour > 6 && hour < 16;
+
+            // If it's not day time, add the dark-mode class to the body
+            if (!isDayTime) {
+                document.body.classList.add('dark-mode');
+            } else {
+                document.body.classList.remove('dark-mode');
+            }
+        }
+
+        // Run the function when the script loads
+        toggleDarkMode();
+
+        // Optional: Set an interval to check periodically (e.g., every 5 minutes)
+        // setInterval(toggleDarkMode, 300000); // Checks every 5 minutes
+
         // This function will create and append a DisplayWork module to the workContainer
         function displayWork(title, imagePath, headline, description) {
             var workContainer = document.getElementById('workContainer');
