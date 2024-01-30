@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>My Homepage</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;700;800&display=swap" rel="stylesheet">
     <style>
-
         body {
             background-color: #F2F1F0;
             font-family: 'Barlow', sans-serif;
@@ -45,7 +45,7 @@
 
         .BodyLarge {
             font-family: 'Barlow', sans-serif;
-            font-size: 24px;
+            font-size: 20px;
             font-style: normal;
             font-weight: 400;
             margin: 0;
@@ -69,11 +69,48 @@
             padding: 8px 0;
             /* border: #2B302B solid 1px; */
         }
+
+        .work-module {
+            background-color: #fff;
+            margin: 20px auto;
+            max-width: 1211px;
+            padding: 8px 0;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .work-title {
+            font-family: 'Barlow', sans-serif;
+            font-size: 28px;
+            font-style: normal;
+            font-weight: 700;
+            line-height: 38px;
+            margin: 0;
+            letter-spacing: -0.28px;
+        }
+
+        .BodySmall {
+            font-family: 'Barlow', sans-serif;
+            font-size: 16px;
+            font-style: normal;
+            font-weight: 400;
+            margin: 0;
+            line-height: 21px;
+        }
+
+        .work-image {
+            width: 100%;
+            height: auto;
+            /* Maintain aspect ratio */
+            margin-top: 20px;
+        }
     </style>
+
 </head>
+
 <body>
     <div class="container" style="margin-top: 50px;">
-        <img src="img/olle.png" alt="Olle Str&ouml;mdahl" width="120" height="120">
+        <img src="img/olle.png" alt="Olle Str&ouml;mdahl" width="158" height="158">
     </div>
     <div class="container">
         <h1>Hello!</h1>
@@ -82,12 +119,56 @@
         <h2>I'm Olle Str&ouml;mdahl, user experience designer.</h2>
     </div>
     <div class="container">
-                <p class="BodyLarge">With almost 30 years of experience of designing for screens, I&rsquo;ve worked across diverse sectors like Media, B2B, Financial services, Healthcare, and Social Innovation. My expertise extends broadly within the digital product development and over the years I have gained a good understanding of neighboring fields like Technical Engineering, Business Development, Market Research and Branding. Closest to my heart though, is creating user experiences that resonates with the end users through Service Design and Design Thinking processes.
-                    <br>
-                    Below are somne projects that I'm particulary proud of:
-                </p>
+        <p class="BodyLarge">With almost 30 years of experience of designing for screens, I&rsquo;ve worked across
+            diverse sectors like Media, B2B, Financial services, Healthcare, and Social Innovation. My expertise extends
+            broadly within the digital product development and over the years I have gained a good understanding of
+            neighboring fields like Technical Engineering, Business Development, Market Research and Branding. Closest
+            to my heart though, is creating user experiences that resonates with the end users through Service Design
+            and Design Thinking processes.
+            <br>
+            Below are some works that I'm particularly proud of:TEST
+        </p>
     </div>
+    <div id="workContainer"></div>
+    <script>
+        // This function will create and append a DisplayWork module to the workContainer
+        function displayWork(title, description, imagePath) {
+            var workContainer = document.getElementById('workContainer');
 
+            // Create elements for the module
+            var module = document.createElement('div');
+            var titleElement = document.createElement('h2');
+            var descriptionElement = document.createElement('p');
+            var imageElement = document.createElement('img');
+
+            // Set content for elements
+            titleElement.textContent = title;
+            descriptionElement.textContent = description;
+            imageElement.src = imagePath;
+
+            // Add classes for styling
+            module.classList.add('work-module');
+            titleElement.classList.add('work-title');
+            descriptionElement.classList.add('BodySmall');
+            imageElement.classList.add('work-image');
+
+            // Append elements to the module
+            module.appendChild(titleElement);
+            module.appendChild(descriptionElement);
+            module.appendChild(imageElement);
+
+            // Append module to the container
+            workContainer.appendChild(module);
+        }
+
+        // Example call to displayWork function
+        // You would call this for each project you want to display
+        // Replace 'path-to-image.jpg' with the path to your project image
+        displayWork("Elsa Science", "Elsa provides a comprehensive Rheumatic care platform consisting of two main components: a self-care patient app, and a SaaS clinical dashboard that visualises the patients disease activity and therapeutic response. I've been involved in various part of the development of the platform and recently with a focus on the development of the Clinical Dashboard. In collaboration with patients and rheumatologists from Sweden and the United States we have developed a solution that meet the specific demands of the American and Swedish healthcare system. I've gained in-depth knowledge of diverse methods for measuring disease activity, the concept of value based care, how EHRs are used and the API standards for sharing patient data across platforms, financial reimbursement models and other complexities related to chronic disease management in the SWE/US healthcare system.",
+            "img/ImgElsa.png");
+        displayWork("Ingen ska ha Hepatit C", "In collaboration with MSD and other partners, I contributed to a vital project aimed at eradicating Hepatitis C in Sweden. Our goal was to develop a solution that covered the whole chain of care for individuals at risk of carrying the virus, particularly targeting populations with lower trust in conventional healthcare, such as active or former drug users.<br>My role involved creating a mobile-friendly solution that encompassed the entire process from an initial screening questionnaire to blood tests and virtual doctor appointments, culminating in treatment. The project was challenging with many partners contributing to the chain of care and it required designing an interface that was not only user-friendly but also sensitive to the unique needs and concerns of the target demographic.",
+            "img/ImgHepatitC.png");
+    </script>
 </body>
-</html>
 
+</html>
