@@ -82,7 +82,7 @@
             font-family: 'Barlow', sans-serif;
             font-size: 28px;
             font-style: normal;
-            font-weight: 400;
+            font-weight: 700;
             color: #2B302B;
             line-height: 38px;
             margin: 20px 46px 0px;
@@ -96,6 +96,7 @@
             font-weight: 400;
             color: #2B302B;
             columns: 25em auto;
+            column-gap: 2em;
             margin: 10px 46px 46px;
             line-height: 21px;
         }
@@ -106,7 +107,7 @@
             font-style: normal;
             font-weight: 700;
             color: #2B302B;
-            margin: 10px 46px 0px;
+            margin: 0px 46px 0px;
             line-height: 21px;
         }
 
@@ -139,10 +140,16 @@
             to my heart though, is creating user experiences that resonates with the end users through Service Design
             and Design Thinking processes.
             <br>
-            Below are some works that I'm particularly proud of:TEST TEST TEST TEST
+            Below are some works that I'm particularly proud of:
         </p>
     </div>
     <div id="workContainer"></div>
+    <div class="container">
+        <h3>Get in touch!</h3>
+<br>
+        <p class="BodyLarge">I&rsquo;m always interested in new projects and opportunities. If you&rsquo;d like to
+            get in touch, please feel free to reach out.</p>
+    </div>
     <script>
         // This function will check the time and toggle dark mode based on daylight hours
         function toggleDarkMode() {
@@ -178,7 +185,8 @@
             titleElement.textContent = title;
             imageElement.src = imagePath;
             headlineElement.textContent = headline;
-            descriptionElement.textContent = description;
+            // Set HTML content for elements
+            descriptionElement.innerHTML = description;
 
             // Add classes for styling
             module.classList.add('work-module');
@@ -205,13 +213,13 @@
             "Elsa Science",
             "img/ImgElsa.png",
             "Supporting Early and Sustained Remission of Rheumatic Diseases",
-            "Elsa provides a comprehensive Rheumatic care platform consisting of two main components: a self-care patient app, and a SaaS clinical dashboard that visualises the patients disease activity and therapeutic response. I've been involved in various part of the development of the platform and recently with a focus on the development of the Clinical Dashboard. In collaboration with patients and rheumatologists from Sweden and the United States we have developed a solution that meet the specific demands of the American and Swedish healthcare system. I've gained in-depth knowledge of diverse methods for measuring disease activity, the concept of value based care, how EHRs are used and the API standards for sharing patient data across platforms, financial reimbursement models and other complexities related to chronic disease management in the SWE/US healthcare system.",
+            "Elsa provides a comprehensive Rheumatic care platform consisting of two main components: a self-care patient app, and a SaaS clinical dashboard that visualises the patients disease activity and therapeutic response. <br> I've been involved in various part of the development of the platform and recently with a focus on the development of the Clinical Dashboard. In collaboration with patients and rheumatologists from Sweden and the United States we have developed a solution that meet the specific demands of the American and Swedish healthcare system. I've gained in-depth knowledge of diverse methods for measuring disease activity, the concept of value based care, how EHRs are used and the API standards for sharing patient data across platforms, financial reimbursement models and other complexities related to chronic disease management in the SWE/US healthcare system.",
         );
         displayWork(
             "Ingen ska ha Hepatit C",
             "img/ImgHepatitC.png",
             "How do we get people with low trust in healthcare to get their Hepatitis C cured?",
-            "In collaboration with MSD and other partners, I contributed to a vital project aimed at eradicating Hepatitis C in Sweden. Our goal was to develop a solution that covered the whole chain of care for individuals at risk of carrying the virus, particularly targeting populations with lower trust in conventional healthcare, such as active or former drug users.<br>My role involved creating a mobile-friendly solution that encompassed the entire process from an initial screening questionnaire to blood tests and virtual doctor appointments, culminating in treatment. The project was challenging with many partners contributing to the chain of care and it required designing an interface that was not only user-friendly but also sensitive to the unique needs and concerns of the target demographic.",
+            "In collaboration with MSD and other partners, I contributed to a vital project aimed at eradicating Hepatitis C in Sweden. Our goal was to develop a solution that covered the whole chain of care for individuals at risk of carrying the virus, particularly targeting populations with lower trust in conventional healthcare, such as active or former drug users. <br> My role involved creating a mobile-friendly solution that encompassed the entire process from an initial screening questionnaire to blood tests and virtual doctor appointments, culminating in treatment. The project was challenging with many partners contributing to the chain of care and it required designing an interface that was not only user-friendly but also sensitive to the unique needs and concerns of the target demographic.",
         );
     </script>
 </body>
