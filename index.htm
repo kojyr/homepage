@@ -167,6 +167,24 @@
             margin-bottom: 20px;
             /* Add space between the image and the description */
         }
+
+        .title-year-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .year {
+            margin-left: auto;
+            font-family: 'Barlow', sans-serif;
+            font-size: 28px;
+            font-style: normal;
+            font-weight: 400;
+            color: #363936;
+            line-height: 38px;
+            margin: 30px 46px 0px;
+            letter-spacing: -0.28px;
+        }
     </style>
 
 </head>
@@ -182,13 +200,13 @@
 
 <body>
     <div class="container" style="margin-top: 50px;">
-        <img src="img/olle.png" alt="Olle Str&ouml;mdahl" width="158" height="158">
+        <img src="img/olle.png" alt="Olle Str&ouml;mdahl" width="128" height="128">
     </div>
     <div class="container">
-        <h1>&#x1F44B; Hello!</h1>
+        <h1>Hello!</h1>
     </div>
     <div class="container">
-        <h2>I'm Olle Str&ouml;mdahl, user experience designer.</h2>
+        <h2>&#x1F44B; I'm Olle Str&ouml;mdahl, user experience designer.</h2>
     </div>
     <div class="container">
         <p class="BodyLarge">With almost 30 years of experience of designing for screens, I&rsquo;ve worked across
@@ -203,7 +221,7 @@
     </div>
     <div id="workContainer"></div>
     <div class="container">
-        <h3>Wow, you got this far!<br></h3>
+        <h3>Wow, you got this far! &#x1F4AA;<br></h3>
     </div>
     <div class="container">
         <p class="BodyLarge">If you&rsquo;d like to get in touch, please feel free to reach out, I'm open for contract
@@ -215,12 +233,14 @@
                 <path
                     d="M31.2 0.319824C13.9685 0.319824 0 14.5032 0 31.9998C0 49.4964 13.9685 63.6798 31.2 63.6798C48.4315 63.6798 62.4 49.4964 62.4 31.9998C62.4 14.5032 48.4315 0.319824 31.2 0.319824ZM23.5625 45.1305H17.2445V24.4857H23.5625V45.1305ZM20.3645 21.9513C18.369 21.9513 17.0788 20.5158 17.0788 18.7404C17.0788 16.9287 18.408 15.5361 20.4457 15.5361C22.4835 15.5361 23.7315 16.9287 23.7705 18.7404C23.7705 20.5158 22.4835 21.9513 20.3645 21.9513ZM46.6375 45.1305H40.3195V33.6894C40.3195 31.0263 39.403 29.2179 37.1183 29.2179C35.373 29.2179 34.3363 30.4422 33.878 31.6203C33.709 32.0394 33.6668 32.6334 33.6668 33.2241V45.1272H27.3455V31.0692C27.3455 28.4919 27.2642 26.337 27.1797 24.4824H32.669L32.9583 27.3501H33.085C33.917 26.0037 35.9548 24.0171 39.364 24.0171C43.5208 24.0171 46.6375 26.8452 46.6375 32.9238V45.1305Z"
                     fill="#0D5BBA" />
-            </svg></a>&nbsp;
-            <a href="mailto:olle.stromdahl@gmail.com">
-                <svg width="63" height="64" viewBox="0 0 63 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M31.1999 0.319824C13.9686 0.319824 0 14.5035 0 31.9999C0 49.4963 13.9686 63.6799 31.1999 63.6799C48.4312 63.6799 62.3998 49.4963 62.3998 31.9999C62.3998 14.5035 48.4312 0.319824 31.1999 0.319824ZM18.9517 22.0999H43.3904C44.6865 22.0999 44.0194 23.7886 43.314 24.2221C42.6086 24.6539 32.8448 30.6472 32.4808 30.8696C32.1168 31.092 31.6456 31.1983 31.1718 31.1983C30.6977 31.1983 30.2265 31.092 29.8627 30.8696C29.4987 30.6472 19.7347 24.6539 19.0293 24.2221C18.3241 23.7886 17.6568 22.0999 18.9517 22.0999ZM44.1999 40.2499C44.1999 40.9428 43.3819 41.8999 42.7554 41.8999H19.6444C19.018 41.8999 18.1999 40.9428 18.1999 40.2499C18.1999 40.2499 18.1999 28.5203 18.1999 28.2157C18.1999 27.9128 18.1944 27.518 18.7585 27.8548C19.5597 28.3318 29.3718 34.2075 29.8627 34.5007C30.3535 34.794 30.6977 34.8292 31.1718 34.8292C31.6456 34.8292 31.9898 34.794 32.4808 34.5007C32.9717 34.2075 42.8401 28.3334 43.6413 27.8564C44.2055 27.5196 44.1999 27.9144 44.1999 28.2174C44.1999 28.5219 44.1999 40.2499 44.1999 40.2499Z" fill="#2E9E49"/>
-                </svg>
-            </a>
+            </svg></a>&nbsp;&nbsp;
+        <a href="mailto:olle.stromdahl@gmail.com">
+            <svg width="63" height="64" viewBox="0 0 63 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path
+                    d="M31.1999 0.319824C13.9686 0.319824 0 14.5035 0 31.9999C0 49.4963 13.9686 63.6799 31.1999 63.6799C48.4312 63.6799 62.3998 49.4963 62.3998 31.9999C62.3998 14.5035 48.4312 0.319824 31.1999 0.319824ZM18.9517 22.0999H43.3904C44.6865 22.0999 44.0194 23.7886 43.314 24.2221C42.6086 24.6539 32.8448 30.6472 32.4808 30.8696C32.1168 31.092 31.6456 31.1983 31.1718 31.1983C30.6977 31.1983 30.2265 31.092 29.8627 30.8696C29.4987 30.6472 19.7347 24.6539 19.0293 24.2221C18.3241 23.7886 17.6568 22.0999 18.9517 22.0999ZM44.1999 40.2499C44.1999 40.9428 43.3819 41.8999 42.7554 41.8999H19.6444C19.018 41.8999 18.1999 40.9428 18.1999 40.2499C18.1999 40.2499 18.1999 28.5203 18.1999 28.2157C18.1999 27.9128 18.1944 27.518 18.7585 27.8548C19.5597 28.3318 29.3718 34.2075 29.8627 34.5007C30.3535 34.794 30.6977 34.8292 31.1718 34.8292C31.6456 34.8292 31.9898 34.794 32.4808 34.5007C32.9717 34.2075 42.8401 28.3334 43.6413 27.8564C44.2055 27.5196 44.1999 27.9144 44.1999 28.2174C44.1999 28.5219 44.1999 40.2499 44.1999 40.2499Z"
+                    fill="#2E9E49" />
+            </svg>
+        </a>
     </div>
     <script>
         // This function will check the time and toggle dark mode based on daylight hours
@@ -240,18 +260,22 @@
         toggleDarkMode();
 
         // This function will create and append a DisplayWork module to the workContainer
-        function displayWork(title, imagePath, headline, description) {
+        function displayWork(title, year, imagePath, headline, description) {
             var workContainer = document.getElementById('workContainer');
 
             // Create elements for the module
             var module = document.createElement('div');
+            var titleYearContainer = document.createElement('div');
+            var yearElement = document.createElement('h2');
             var titleElement = document.createElement('h2');
             var imageElement = document.createElement('img');
             var headlineElement = document.createElement('headline');
             var descriptionElement = document.createElement('p');
 
+
             // Set content for elements
             titleElement.innerHTML = title;
+            yearElement.textContent = year;
             imageElement.src = imagePath;
             headlineElement.innerHTML = headline;
             // Set HTML content for elements
@@ -259,14 +283,18 @@
 
             // Add classes for styling
             module.classList.add('work-module');
+            titleYearContainer.classList.add('title-year-container');
             titleElement.classList.add('work-title');
+            yearElement.classList.add('year');
             imageElement.classList.add('work-image');
             headlineElement.classList.add('headline');
             descriptionElement.classList.add('BodySmall');
 
 
             // Append elements to the module
-            module.appendChild(titleElement);
+            titleYearContainer.appendChild(titleElement);
+            titleYearContainer.appendChild(yearElement);
+            module.appendChild(titleYearContainer);
             module.appendChild(imageElement);
             module.appendChild(headlineElement);
             module.appendChild(descriptionElement);
@@ -280,66 +308,77 @@
         // Replace 'path-to-image.jpg' with the path to your project image
         displayWork(
             "Elsa Science",
+            "2020-2023",
             "img/ImgElsa.png",
             "Supporting Early and Sustained Remission of Rheumatic Diseases",
             "Elsa provides a comprehensive Rheumatic care platform consisting of two main components: a self-care patient app, and a SaaS clinical dashboard that visualises the patients disease activity and therapeutic response. <br> I've been involved in various part of the development of the platform and recently with a focus on the development of the Clinical Dashboard. In collaboration with patients and rheumatologists from Sweden and the United States we have developed a solution that meet the specific demands of the American and Swedish healthcare system. I've gained in-depth knowledge of diverse methods for measuring disease activity, the concept of value based care, how EHRs are used and the API standards for sharing patient data across platforms, financial reimbursement models and other complexities related to chronic disease management in the SWE/US healthcare system.",
         );
         displayWork(
             "Ingen ska ha Hepatit C",
+            "2018-2019",
             "img/ImgHepatitC.png",
             "How do we get people with low trust in healthcare to get their Hepatitis C cured?",
             "In collaboration with MSD and other partners, I contributed to a vital project aimed at eradicating Hepatitis C in Sweden. Our goal was to develop a solution that covered the whole chain of care for individuals at risk of carrying the virus, particularly targeting populations with lower trust in conventional healthcare, such as active or former drug users. <br> My role involved creating a mobile-friendly solution that encompassed the entire process from an initial screening questionnaire to blood tests and virtual doctor appointments, culminating in treatment. The project was challenging with many partners contributing to the chain of care and it required designing an interface that was not only user-friendly but also sensitive to the unique needs and concerns of the target demographic.",
         );
         displayWork(
             "FHabian",
+            "2019",
             "img/ImgFabian.png",
             "Finding and screening  relatives to patients with FH",
             "FHabian.nu is a digital healthcare project aimed at improving the understanding and management of Familial Hypercholesterolemia (FH). This initiative sought to integrate into the Swedish healthcare system, offering a user-friendly digital platform for both patients and medical professionals. <br>My role involved designing an interface that transformed complex medical data into an accessible format. Key features I worked on included the development of a virtual family tree for patients, aiding in the early detection of FH among relatives. This approach was geared towards proactive health management, promoting early screening and intervention. <br>In creating the platform, I focused on ensuring a smooth user experience, blending functionality with intuitive design. This encompassed aspects like patient registration, data processing, and effective communication channels with healthcare providers.",
         );
         displayWork(
             "FEDiCS",
+            "2018",
             "img/ImgFedics.png",
             "Making it a bit easier for people in a dire situation",
             "In collaboration with Health Solutions and the national quality register for eating disorders (RiksÄT), I was part of the FEDiCS project. Our aim was to develop a more user-friendly solution for the self-assessment forms required by patients seeking treatment for eating disorders. Previously, these assessments were conducted on a computer the clinic. The process could take over an hour and the exciting solution did not provide any visual cues on how much was left or any support functionality. Our new solution enabled patients to complete these forms more conveniently and privately and in their own phase via a mobile solution. <br>The data from the forms is then integrated into a quality register, and also serving as a crucial decision-support tool for the clinic.",
         );
         displayWork(
             "Hurm&aring;rdu.nu (F&ouml;rsta Linjen)",
+            "2016-2017",
             "img/ImgHurMarDu.png",
             "Make young people to feel safe and comfortable to contact F&ouml;rsta Linjen",
             "In collaboration with ExperioLab, Ocean Observations developed an online platform aimed at encouraging teenagers with mental health issues to seek timely help. The project involved close cooperation with the client team as well as the target audience—teenagers themselves. My role encompassed conceptual development, shaping the brand's personality and creating its user interface.",
         );
         displayWork(
             "Detectivio",
+            "2018",
             "img/ImgDetectivio.png",
             "A fast and non-contact vital signs assessment tool",
             "In 2017, Detectivio was founded by a medical doctor and a computer science engineer, embarking on a journey to revolutionize the measurement of vital signs – pulse, respiratory rate, blood oxygen level, blood pressure, and body temperature – fundamental features of human physiology. The venture leveraged advanced sensors, optics, digital signal processing, computer vision, machine learning, and artificial neural networks, all aimed at using modern technology to facilitate, streamline, and broaden the assessment of health. <br>A team from Ocean assisted Detectivio with the formulation of mission and vision statements, as well as creating illustrations for their investor pitch deck. As part of this team, my role involved facilitating workshops and developing concept illustrations and workflow visualizations.",
         );
         displayWork(
             "QiuzRR",
+            "2014-2018",
             "img/ImgQuizrr.png",
             "Strengthening textile workers rights in China and Bangladesh",
             "At Ocean, in collaboration with the startup QuizRR, we developed a digital game designed to educate factory workers in China and Bangladesh about their rights, while simultaneously strengthening the competitiveness of both factories and buyers. I played a key role in shaping the visual aesthetics and interface of the game, as well as the website where buyers and factories converge.",
         );
         displayWork(
             "Altitude22",
+            "2016",
             "img/ImgAltitude22.png",
             "Coaching executives",
             "As part of Altitude 22's endeavour to launch a new coaching service for international executives, Ocean Observations was tasked with creating a mobile-optimized platform to streamline communication between coaches and their clients. <br> My role was comprehensive, involving the conception of the brand identity, as well as designing the website and mobile app interface. The platform features functionalities such as to-do lists, goal tracking, and a booking calendar, effectively enhancing client-coach interactions and organizational efficiency.",
         );
         displayWork(
             "Gapminder",
+            "2016",
             "img/ImgGapminder.png",
             "Find out how people <u>really</u> lives",
             "In the news people in other cultures seem stranger than they are. Gapminder visited 264 families in 50 countries and collected 30,000 photos. <br>As part of Gapminder -founded by the renowned Hans Rosling collaborated with Anna Rosling R&ouml;nnlund on her visionary project, Dollar Street. <br>We helped make onboarding and (re)designed the user interface. <br>The project has received several accolades, including the Fast Company World Changing Ideas Award, highlighting its social impact.",
         );
         displayWork(
             "4D Hj&auml;rtsvikt",
+            "2016",
             "img/ImgHjartsvikt.png",
             "Design Research and Service Innovation in 4D Hj&auml;rtsvikt Initiative",
             "As a key contributor to the 4D Hj&auml;rtsvikt initiative, Ocean Observations undertook design research to create the patient journey for individuals afflicted with congestive heart failure (CHF). Through&nbsp; comprehensive interviews with patients and healthcare providers we gathered insights into both the care process and patient experience. The intelligence gleaned from this research was used when designing a targeted screening service. This service efficiently directs patients to specialists for accurate diagnosis when symptoms suggest potential CHF. I was entrusted with crafting the patient journey map and overseeing the graphic design elements of the screening service.",
         );
         displayWork(
             "Aditro",
+            "2015-2017",
             "img/ImgAditro.png",
             "Design Research and Service Innovation in 4D Hj&auml;rtsvikt Initiative",
             "Together with Aditro we redesigned their cloud-based Human Resource management product, myHRM, from a complex system to a user-friendly offering. myHRM is designed around the workday needs of real people. Based on insights from user research we designed an application that simplifies complex HRM tasks into one seamless, intuitive experience. The application is easily accessible on PC, tablet and mobile so whether you're an employee, manager, HR administrator, or organizational leader you get the support you need for a more pleasant workday.",
