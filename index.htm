@@ -217,6 +217,7 @@
         </p>
     </div>
     <div id="workContainer"></div>
+
     <div class="container">
         <h3>Wow, you made it all the way here! &#x1F4AA;<br></h3>
     </div>
@@ -275,7 +276,6 @@
             yearElement.textContent = year;
             imageElement.src = imagePath;
             headlineElement.innerHTML = headline;
-            // Set HTML content for elements
             descriptionElement.innerHTML = description;
 
             // Add classes for styling
@@ -300,9 +300,7 @@
             workContainer.appendChild(module);
         }
 
-        // Example call to displayWork function
-        // You would call this for each project you want to display
-        // Replace 'path-to-image.jpg' with the path to your project image
+        // Call to displayWork function
         displayWork(
             "Elsa Science",
             "2020-2023",
@@ -380,7 +378,13 @@
             "A people friendly approach to HRM",
             "Together with Aditro we redesigned their cloud-based Human Resource management product, myHRM, from a complex system to a user-friendly offering. myHRM is designed around the workday needs of real people. Based on insights from user research we designed an application that simplifies complex HRM tasks into one seamless, intuitive experience. The application is easily accessible on PC, tablet and mobile so whether you're an employee, manager, HR administrator, or organizational leader you get the support you need for a more pleasant workday.",
         );
-
+        // displayWork(
+        //     "Sveriges Radio",
+        //     "1995",
+        //     "img/Old.png",
+        //     "First website for Sveriges Radio",
+        //     "I just had discovered the modem. It was a 14400 modem and it could access some parts of the early internet, like newsgroups through communitys like the IDG FirstClass Server. <br> I posted an job application on SWENET/JOBS and some Handels hot shot at Kinnevik read it. He wanted me to show an example of a web design I had done. My only reference of the web was from what I'd read in magazines. I had no idea of what a website could look like, but I made something up with lots of graphics in a an elaborate PhotoShop 2 composition. <br>",
+        // );
 
     </script>
 </body>
