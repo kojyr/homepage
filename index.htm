@@ -2,6 +2,7 @@
 <html>
 
 <head>
+    <meta charset="UTF-8">
     <title>Olle Str&ouml;mdahl - UX Designer Portfolio</title>
     <meta name="description"
         content="Olle Str&ouml;mdahl's portfolio showcasing over 30 years of UX design experience across media, healthcare, and social innovation sectors.">
@@ -182,6 +183,41 @@
             justify-content: space-between;
             align-items: center;
         }
+
+        #selected-language {
+
+            font-family: 'Barlow', sans-serif;
+            color: #A79D94;
+            font-size: 18px;
+            font-style: normal;
+            font-weight: 400;
+            line-height: 35px;
+            margin: 0;
+            letter-spacing: -0.2px;
+
+        }
+
+        .language-option {
+            font-family: 'Barlow', sans-serif;
+            font-size: 18px;
+            font-style: normal;
+            font-weight: 400;
+            margin: 0;
+            line-height: 32px;
+            padding: 4px 8px;
+            cursor: pointer;
+        }
+
+        #language-selector img {
+            padding: 4px;
+            /* Padding around icon and chevron */
+        }
+
+        /* Additional style for dropdown container to prevent it from closing too tightly */
+        #language-options {
+            padding: 4px 0;
+            /* Vertical padding for the dropdown container */
+        }
     </style>
 
 </head>
@@ -196,17 +232,30 @@
 </script>
 
 <body>
+    <div id="language-selector"
+        style="position: absolute; top: 20px; right: 20px; display: flex; align-items: center; cursor: pointer;">
+        <img src="img/IcnLanguage.svg" alt="Language" style="height: 20px; width: 20px;">
+        <span id="selected-language">English</span>
+        <img src="img/chevron.svg" alt="Expand" style="height: 8px; width: 17px;">
+        <div id="language-options"
+            style="display: none; position: absolute; top: 100%; right: 0; background-color: white; ; border-radius: 12px; border: 1px solid #ccc;">
+            <div class="language-option" data-lang="en">English</div>
+            <div class="language-option" data-lang="sv">Svenska</div>
+        </div>
+    </div>
+
     <div class="container" style="margin-top: 50px;">
         <img src="img/olle.png" alt="Olle Str&ouml;mdahl" width="128" height="128">
     </div>
     <div class="container">
-        <h1>Hello!</h1>
+        <h1 data-lang-key="greeting">Hello!</h1>
     </div>
     <div class="container">
-        <h2>&#x1F44B; I'm Olle Str&ouml;mdahl, user experience designer.</h2>
+        <h2 data-lang-key="presentation">&#x1F44B; I'm Olle Str&ouml;mdahl, user experience designer.</h2>
     </div>
     <div class="container">
-        <p class="BodyLarge">With nearly three decades of experience in designing for screens, I have worked across
+        <p data-lang-key="intro" class="BodyLarge">With nearly three decades of experience in designing for screens, I
+            have worked across
             diverse sectors, including Media, B2B, Financial Services, Healthcare, and Social Innovation. My expertise
             spans digital product development, complemented by a solid understanding of adjacent fields such as
             Technical Engineering, Business Development, Market Research, and Branding. However, what truly captivates
@@ -219,12 +268,12 @@
     <div id="workContainer"></div>
 
     <div class="container">
-        <h3>Wow, you made it all the way here! &#x1F4AA;<br></h3>
+        <h3 data-lang-key="wow">Wow, you made it all the way here! &#x1F4AA;<br></h3>
     </div>
-    <div class="container">
+    <!-- <div class="container">
         <p class="BodyLarge">If you'd like to collaborate or just say hi, please feel free to reach out. I'm currently
             open to contract work.</p>
-    </div>
+    </div> -->
     <div class="container" style="margin-bottom: 100px;">
         <a href="https://www.linkedin.com/in/olle-str%C3%B6mdahl-627a19" target="_blank"><svg width="63" height="64"
                 viewBox="0 0 63 64" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -240,6 +289,63 @@
             </svg>
         </a>
     </div>
+    <script>
+        const translations = {
+            en: {
+                greeting: "Hello!",
+                presentation: "&#x1F44B; I'm Olle Str&ouml;mdahl, user experience designer.",
+                intro: "With nearly three decades of experience in designing for screens, I have worked across diverse sectors, including Media, B2B, Financial Services, Healthcare, and Social Innovation.My expertise spans digital product development, complemented by a solid understanding of adjacent fields such as Technical Engineering, Business Development, Market Research, and Branding.However, what truly captivates me is crafting user experiences that resonate deeply with end - users through Service Design and Design Thinking processes.",
+                wow: "Wow, you made it all the way here! &#x1F4AA;",
+            },
+            sv: {
+                greeting: "Hej!",
+                presentation: "&#x1F44B; Olle Strömdahl heter jag, och sysslar med UX och en hel del annat.",
+                intro: "Jag måste erkänna att jag inte är något vidare på att sälja mig själv. Jag föredrar istället att djupdyka i hur saker hänger ihop och fungerar (eller inte fungerar), prata med användare, testa saker och komma på kluriga, men till slut förvånansvärt enkla lösningar. Jag är erfaren nog att ha utvecklat en bra magkänsla för om saker fungerar eller inte, men jag kan såklart fortfarande förvånas och lära mig nytt. <br>Jag gillar teknik och är, som många andra, djupt engagerad i vad AI är just nu, och funderar mycket på vad det kommer att vara imorgon (min AI Vera har hjälpt mig koda denna sida, men inte skrivit denna text). Hur som helst, jag är inte anställd just nu, utan tänker att jag ska prova på att frilansa. Det var 29 år sedan sist, så jag är lite ovan vid just den grejen. Vi får se, kanske kommer vi svepas med i ett äventyr tillsammans som ändrar på den saken! <br>Kolla gärna på grejer jag har gjort nedan och hör av dig om du vill veta mer eller ta en fika!",
+                wow: "Wow, du orkade scrolla hela vägen! &#x1F4AA;",
+            }
+        };
+
+        function changeLanguage(lang) {
+            document.querySelectorAll('[data-lang-key]').forEach(element => {
+                const key = element.getAttribute('data-lang-key');
+                if (translations[lang] && translations[lang][key]) {
+                    element.innerHTML = translations[lang][key]; // Changed from textContent to innerHTML
+                }
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            // Event listener for opening/closing the language selector
+            document.getElementById('language-selector').addEventListener('click', function (event) {
+                var display = document.getElementById('language-options').style.display;
+                document.getElementById('language-options').style.display = display === 'block' ? 'none' : 'block';
+                event.stopPropagation();
+            });
+
+            // Event listener for selecting a language
+            document.querySelectorAll('.language-option').forEach(function (element) {
+                element.addEventListener('click', function (event) {
+                    event.stopPropagation();
+                    const selectedLanguage = this.getAttribute('data-lang');
+                    document.getElementById('selected-language').textContent = this.textContent;
+                    document.getElementById('language-options').style.display = 'none';
+                    changeLanguage(selectedLanguage);
+                });
+            });
+
+            // Close the dropdown if clicked outside
+            document.addEventListener('click', function () {
+                document.getElementById('language-options').style.display = 'none';
+            });
+
+            // Automatically set language based on the browser's preferred settings
+            const userLanguage = navigator.language || navigator.userLanguage;
+            const defaultLang = userLanguage.startsWith('sv') ? 'sv' : 'en';
+            changeLanguage(defaultLang);
+            document.getElementById('selected-language').textContent = defaultLang === 'sv' ? 'Svenska' : 'English';
+        });
+    </script>
+
     <script>
         // This function will check the time and toggle dark mode based on daylight hours
         function toggleDarkMode() {
