@@ -13,8 +13,14 @@ body, html {
     position: relative;
 }
 
-#panorama {
+#panorama-wrapper {
+    display: flex;
     position: absolute;
     height: 100%;
-    transition: transform 0.1s linear;
+}
+
+.panorama {
+    height: 100%;
+    width: auto;
+    will-change: transform;
 }

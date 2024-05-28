@@ -1,22 +1,38 @@
-document.addEventListener('DOMContentLoaded', (event) => {
-    const panorama = document.getElementById('panorama');
+document.addEventListener('DOMContentLoaded', () => {
+    const panoramaWrapper = document.getElementById('panorama-wrapper');
     const container = document.getElementById('container');
 
-    container.addEventListener('mousemove', (e) => {
+    let mouseX = 0;
+    let speed = 0;
+
+    const updateSpeed = (e) => {
         const containerWidth = container.clientWidth;
-        const imageWidth = panorama.clientWidth;
-        const mouseX = e.clientX;
+        mouseX = e.clientX;
 
-        // Calculate the percentage of mouse position relative to the container width
-        const mousePercentage = mouseX / containerWidth;
+        const centerX = containerWidth / 2;
+        const offsetX = mouseX - centerX;
+        speed = -offsetX / centerX * 2; // Reversed speed direction
+    };
 
-        // Calculate the maximum translation value based on the image width
-        const maxTranslateX = imageWidth - containerWidth;
+    container.addEventListener('mousemove', updateSpeed);
 
-        // Calculate the translation value
-        const translateX = maxTranslateX * mousePercentage;
+    const updatePosition = () => {
+        const images = document.querySelectorAll('.panorama');
+        const imageWidth = images[0].clientWidth;
+        let currentX = parseFloat(panoramaWrapper.style.transform.replace('translateX(', '').replace('px)', '')) || 0;
 
-        // Apply the translation to the image
-        panorama.style.transform = `translateX(${-translateX}px)`;
-    });
+        currentX += speed;
+
+        if (currentX <= -imageWidth) {
+            currentX += imageWidth;
+        } else if (currentX >= 0) {
+            currentX -= imageWidth;
+        }
+
+        panoramaWrapper.style.transform = `translateX(${currentX}px)`;
+
+        requestAnimationFrame(updatePosition);
+    };
+
+    requestAnimationFrame(updatePosition);
 });
