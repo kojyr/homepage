@@ -202,6 +202,12 @@ function playMusic(token, device_id) {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${token}`
         }
+    }).then(response => {
+        if (!response.ok) {
+            console.error('Failed to start playback:', response);
+        }
+    }).catch(error => {
+        console.error('Error starting playback:', error);
     });
 }
 
