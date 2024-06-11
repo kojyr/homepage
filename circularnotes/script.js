@@ -6,17 +6,9 @@ const height = canvas.height;
 const speedKnob = document.getElementById('speedKnob');
 const chaosKnob = document.getElementById('chaosKnob');
 const volumeKnob = document.getElementById('volumeKnob');
-const resetButton = document.createElement('button');
-
-resetButton.textContent = 'Reset';
-resetButton.style.position = 'absolute';
-resetButton.style.bottom = '10px';
-resetButton.style.left = '10px';
-resetButton.style.background = '#f0ead6';
-resetButton.style.border = 'none';
-resetButton.style.borderRadius = '50%';
-resetButton.style.padding = '10px';
-document.body.appendChild(resetButton);
+const resetButton = document.getElementById('resetButton');
+const startButton = document.getElementById('startButton');
+const pauseButton = document.getElementById('pauseButton');
 
 const shapeButtons = {
     triangle: document.getElementById('triangleButton'),
@@ -37,28 +29,46 @@ const wall = {
 const ballSize = 20;
 const balls = [
     {
-        x: 100,
-        y: 100,
+        x: 150,
+        y: 150,
         radius: ballSize * 1.4, // Blue ball 40% larger
         color: '#4d80a6', // Desaturated blue
         isDragging: false,
-        type: 'main'
+        type: 'main',
+        path: [],
+        speed: parseInt(speedKnob.value),
+        vx: 0,
+        vy: 0,
+        strokeColor: '#597FA2',
+        frequencyRange: [65.41, 130.81] // C2 to C3
     },
     {
-        x: 100,
-        y: 100,
+        x: 150,
+        y: 150,
         radius: ballSize * 1.2, // White ball 20% larger
         color: '#f0ead6', // Eggshell white
         isDragging: false,
-        type: 'main'
+        type: 'main',
+        path: [],
+        speed: parseInt(speedKnob.value),
+        vx: 0,
+        vy: 0,
+        strokeColor: '#EFEAD8',
+        frequencyRange: [130.81, 261.63] // C3 to C4
     },
     {
-        x: 100,
-        y: 100,
+        x: 150,
+        y: 150,
         radius: ballSize, // Red ball
         color: '#a64d4d', // Desaturated red
         isDragging: false,
-        type: 'main'
+        type: 'main',
+        path: [],
+        speed: parseInt(speedKnob.value),
+        vx: 0,
+        vy: 0,
+        strokeColor: '#9B5250',
+        frequencyRange: [261.63, 523.25] // C4 to C5
     },
     {
         x: width - 80, // Moved closer to the wall
@@ -71,14 +81,22 @@ const balls = [
     }
 ];
 
+console.log("Balls initialized: ", balls);
+
 let chaosFactor = parseFloat(chaosKnob.value); // Adjust this value to increase or decrease chaos
-let path = []; // To store the ball's path
 let volume = parseFloat(volumeKnob.value); // Volume control
+let isRunning = false; // Animation state
 
 const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-let gainNode = audioContext.createGain();
-gainNode.gain.value = volume;
-gainNode.connect(audioContext.destination);
+
+// Function to resume AudioContext on user interaction
+function resumeAudioContext() {
+    if (audioContext.state === 'suspended') {
+        audioContext.resume();
+    }
+}
+
+document.body.addEventListener('click', resumeAudioContext);
 
 const equalTemperamentFrequencies = [
     261.63, // C
@@ -94,39 +112,6 @@ const equalTemperamentFrequencies = [
     466.16, // A#
     493.88  // B
 ];
-
-function drawShapeButton(button, sides) {
-    const size = button.offsetWidth / 2;
-    const angle = (2 * Math.PI) / sides;
-    const btnCtx = button.getContext('2d');
-    btnCtx.clearRect(0, 0, button.offsetWidth, button.offsetHeight);
-    btnCtx.beginPath();
-    for (let i = 0; i < sides; i++) {
-        const x = size + size * Math.cos(i * angle);
-        const y = size + size * Math.sin(i * angle);
-        if (i === 0) {
-            btnCtx.moveTo(x, y);
-        } else {
-            btnCtx.lineTo(x, y);
-        }
-    }
-    btnCtx.closePath();
-    btnCtx.strokeStyle = '#f0ead6';
-    btnCtx.lineWidth = 2;
-    btnCtx.stroke();
-}
-
-function drawCircleButton(button) {
-    const size = button.offsetWidth / 2;
-    const btnCtx = button.getContext('2d');
-    btnCtx.clearRect(0, 0, button.offsetWidth, button.offsetHeight);
-    btnCtx.beginPath();
-    btnCtx.arc(size, size, size, 0, Math.PI * 2);
-    btnCtx.closePath();
-    btnCtx.strokeStyle = '#f0ead6';
-    btnCtx.lineWidth = 2;
-    btnCtx.stroke();
-}
 
 function drawCircle(x, y, radius, color, isStroke = false, strokeColor = 'black', strokeWidth = 1) {
     ctx.beginPath();
@@ -165,59 +150,76 @@ function drawPolygon(x, y, radius, sides, color, isStroke = false, strokeColor =
     }
 }
 
-function playNote(freq) {
+function playNoteWithFadeOut(freq) {
     if (!isFinite(freq)) {
         console.warn('Non-finite frequency value:', freq);
         return;
     }
     const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain(); // Create a new gain node for each note
     oscillator.type = 'sine';
     oscillator.frequency.setValueAtTime(freq, audioContext.currentTime);
     oscillator.connect(gainNode);
-    oscillator.start();
-    oscillator.stop(audioContext.currentTime + 0.1);
+    gainNode.connect(audioContext.destination);
+
+    const currentTime = audioContext.currentTime;
+    gainNode.gain.setValueAtTime(volume, currentTime); // Set the gain to the current volume
+    gainNode.gain.linearRampToValueAtTime(0, currentTime + 0.3); // Fade out over 0.3 seconds
+
+    oscillator.start(currentTime);
+    oscillator.stop(currentTime + 0.3); // Stop the oscillator after 0.3 seconds
+}
+
+function playNoteForCircle(yPosition, frequencyRange) {
+    const [minFreq, maxFreq] = frequencyRange;
+    const noteIndex = Math.floor((1 - yPosition / height) * equalTemperamentFrequencies.length);
+    const baseFreq = equalTemperamentFrequencies[noteIndex % equalTemperamentFrequencies.length];
+    const freq = minFreq + ((baseFreq - 261.63) * (maxFreq - minFreq) / (523.25 - 261.63));
+    playNoteWithFadeOut(freq);
 }
 
 function getEqualTemperamentFrequency(index) {
-    return equalTemperamentFrequencies[index % 12];
+    return equalTemperamentFrequencies[index % equalTemperamentFrequencies.length];
 }
 
 function update() {
+    if (!isRunning) return; // Exit update if paused
+
     ctx.clearRect(0, 0, width, height);
 
     const shapeSides = wall.sides;
     const wallRadius = wall.radius;
 
     if (shapeSides === 0) {
-        drawCircle(wall.x, wall.y, wallRadius, null, true, '#f0ead6', 10); // Wall with eggshell white stroke
+        drawCircle(wall.x, wall.y, wallRadius, null, true, '#151616', 10); // Wall with eggshell white stroke
     } else {
         drawPolygon(wall.x, wall.y, wallRadius, shapeSides, null, true, '#f0ead6', 10); // Wall with eggshell white stroke
     }
 
-    // Draw the path
-    ctx.lineWidth = 1;
-    ctx.globalCompositeOperation = 'lighter'; // Blend mode to make crossings lighter
-    ctx.beginPath();
-    for (let i = 0; i < path.length - 1; i++) {
-        const alpha = 0.3 - (Date.now() - path[i].time) / 60000; // Adjust alpha for 30% transparency
-        ctx.strokeStyle = `rgba(240, 234, 214, ${alpha})`; // Eggshell white color with varying alpha
-        ctx.moveTo(path[i].x, path[i].y);
-        ctx.lineTo(path[i + 1].x, path[i + 1].y);
-    }
-    ctx.stroke();
-    ctx.globalCompositeOperation = 'source-over'; // Reset blend mode
-
-    for (const ball of balls) {
+    balls.forEach(ball => {
+        // Draw the path for each ball
         if (ball.type === 'main') {
-            if (!ball.isDragging && ball.vx !== 0 && ball.vy !== 0) {
+            ctx.lineWidth = 1;
+            ctx.globalCompositeOperation = 'screen'; // Use screen blend mode
+            ctx.beginPath();
+            for (let i = 0; i < ball.path.length - 1; i++) {
+                const alpha = 0.7 - (Date.now() - ball.path[i].time) / 120; // Adjust alpha for 70% transparency
+                ctx.strokeStyle = `rgba(${parseInt(ball.strokeColor.slice(1, 3), 16)}, ${parseInt(ball.strokeColor.slice(3, 5), 16)}, ${parseInt(ball.strokeColor.slice(5, 7), 16)}, ${alpha})`; // Color with varying alpha
+                ctx.moveTo(ball.path[i].x, ball.path[i].y);
+                ctx.lineTo(ball.path[i + 1].x, ball.path[i + 1].y);
+            }
+            ctx.stroke();
+            ctx.globalCompositeOperation = 'source-over'; // Reset blend mode
+
+            if (!ball.isDragging && (ball.vx !== 0 || ball.vy !== 0)) {
                 ball.x += ball.vx;
                 ball.y += ball.vy;
 
                 // Store ball's position in the path
-                path.push({ x: ball.x, y: ball.y, color: ball.color, time: Date.now() });
+                ball.path.push({ x: ball.x, y: ball.y, time: Date.now() });
 
                 // Remove old path points
-                path = path.filter(p => Date.now() - p.time < 60000); // 60 seconds fade-out time
+                ball.path = ball.path.filter(p => Date.now() - p.time < 60000); // 60 seconds fade-out time
 
                 const dx = ball.x - wall.x;
                 const dy = ball.y - wall.y;
@@ -254,9 +256,8 @@ function update() {
                         ball.vx = Math.cos(angleWithChaos) * currentSpeed;
                         ball.vy = Math.sin(angleWithChaos) * currentSpeed;
 
-                        // Inverted harmonic frequency based on vertical position
-                        const baseFreq = 100 + ((height - ball.y) / height) * 800; // Inverted base frequency
-                        playNote(baseFreq);
+                        // Play note based on vertical position and ball type
+                        playNoteForCircle(ball.y, ball.frequencyRange);
                     }
                 } else { // Polygon collision detection
                     for (let i = 0; i < shapeSides; i++) {
@@ -293,34 +294,38 @@ function update() {
 
                             // Equal temperament frequency based on side index
                             const freq = getEqualTemperamentFrequency(i);
-                            playNote(freq);
+                            playNoteWithFadeOut(freq);
                             break;
                         }
                     }
                 }
             }
-        }
-    }
-
-    for (const ball of balls) {
-        if (ball.type === 'main') {
-            drawCircle(ball.x, ball.y, ball.radius, ball.color); // Draw the main balls
         } else if (ball.type === 'anti-gravity') {
             // Draw the anti-gravity ball as a dashed ring
             ctx.setLineDash([5, 5]);
             drawCircle(ball.x, ball.y, ball.effectRadius, null, true, `rgba(240, 234, 214, 0.2)`, 2);
             ctx.setLineDash([]);
         }
-    }
+
+        // Draw the ball itself
+        drawCircle(ball.x, ball.y, ball.radius, ball.color, true, ball.strokeColor);
+    });
+
+    // Apply anti-gravity effect
+    balls.forEach(ball1 => {
+        if (ball1.type === 'main') {
+            balls.forEach(ball2 => {
+                if (ball2.type === 'anti-gravity') {
+                    applyAntiGravity(ball1, ball2);
+                }
+            });
+        }
+    });
 
     requestAnimationFrame(update);
 }
 
-function distance(ball1, ball2) {
-    return Math.sqrt((ball1.x - ball2.x) ** 2 + (ball1.y - ball2.y) ** 2);
-}
-
-function applyAntiGravity(ball1, ball2) {    
+function applyAntiGravity(ball1, ball2) {
     const dx = ball1.x - ball2.x;
     const dy = ball1.y - ball2.y;
     const dist = Math.sqrt(dx * dx + dy * dy);
@@ -332,15 +337,31 @@ function applyAntiGravity(ball1, ball2) {
     }
 }
 
+function resetBalls() {
+    balls[0].x = balls[1].x = balls[2].x = 150;
+    balls[0].y = balls[1].y = balls[2].y = 150;
+    balls[3].x = width - 80; // Adjusted for new position
+    balls[3].y = height - 80; // Adjusted for new position
+
+    balls.forEach(ball => {
+        ball.vx = 0;
+        ball.vy = 0;
+        ball.path = [];
+    });
+
+    isRunning = false; // Pause on reset
+}
+
 canvas.addEventListener('mousedown', (event) => {
     const rect = canvas.getBoundingClientRect();
     const mouseX = event.clientX - rect.left;
     const mouseY = event.clientY - rect.top;
 
-    for (const ball of balls) {
+    for (let i = balls.length - 1; i >= 0; i--) { // Iterate in reverse to prioritize the top ball
+        const ball = balls[i];
         const isAntiGravity = ball.type === 'anti-gravity';
         const effectiveRadius = isAntiGravity ? ball.effectRadius : ball.radius;
-        if (distance({ x: mouseX, y: mouseY }, ball) < effectiveRadius) {
+        if (Math.sqrt((mouseX - ball.x) ** 2 + (mouseY - ball.y) ** 2) < effectiveRadius) {
             ball.isDragging = true;
             break;
         }
@@ -352,12 +373,12 @@ canvas.addEventListener('mousemove', (event) => {
     const mouseX = event.clientX - rect.left;
     const mouseY = event.clientY - rect.top;
 
-    for (const ball of balls) {
+    balls.forEach(ball => {
         if (ball.isDragging) {
             ball.x = mouseX;
             ball.y = mouseY;
         }
-    }
+    });
 });
 
 canvas.addEventListener('mouseup', (event) => {
@@ -365,51 +386,27 @@ canvas.addEventListener('mouseup', (event) => {
     const mouseX = event.clientX - rect.left;
     const mouseY = event.clientY - rect.top;
 
-    for (const ball of balls) {
+    balls.forEach(ball => {
         if (ball.isDragging) {
             ball.isDragging = false;
-            if (distance({ x: mouseX, y: mouseY }, wall) <= wall.radius) {
+            if (Math.sqrt((mouseX - wall.x) ** 2 + (mouseY - wall.y) ** 2) <= wall.radius && ball.type === 'main') {
                 ball.vy = ball.speed; // Start the ball's animation if inside the wall
-                hasStarted = true;
+                ball.vx = 0;
+                ball.path.push({ x: ball.x, y: ball.y, time: Date.now() });
             }
         }
-    }
+    });
 });
 
-resetButton.addEventListener('click', () => {
-    balls[0].x = balls[1].x = balls[2].x = 100;
-    balls[0].y = balls[1].y = balls[2].y = 100;
-    balls[3].x = width - 80; // Adjusted for new position
-    balls[3].y = height - 80; // Adjusted for new position
+resetButton.addEventListener('click', resetBalls);
 
-    for (const ball of balls) {
-        ball.vx = 0;
-        ball.vy = 0;
-    }
-    hasStarted = false;
-    path = []; // Clear the path
+startButton.addEventListener('click', () => {
+    isRunning = true;
+    update();
 });
 
-// Update ball speed, chaos factor, and volume on knob changes
-speedKnob.addEventListener('input', () => {
-    for (const ball of balls) {
-        if (ball.type === 'main') {
-            ball.speed = parseInt(speedKnob.value);
-            if (hasStarted) {
-                ball.vx = (ball.vx / Math.abs(ball.vx)) * ball.speed;
-                ball.vy = (ball.vy / Math.abs(ball.vy)) * ball.speed;
-            }
-        }
-    }
-});
-
-chaosKnob.addEventListener('input', () => {
-    chaosFactor = parseFloat(chaosKnob.value);
-});
-
-volumeKnob.addEventListener('input', () => {
-    volume = parseFloat(volumeKnob.value);
-    gainNode.gain.value = volume;
+pauseButton.addEventListener('click', () => {
+    isRunning = false;
 });
 
 // Shape button event listeners
@@ -420,26 +417,6 @@ shapeButtons.hexagon.addEventListener('click', () => wall.sides = 6);
 shapeButtons.dodecagon.addEventListener('click', () => wall.sides = 12);
 shapeButtons.circle.addEventListener('click', () => wall.sides = 0);
 
-// Draw shape buttons
-for (const shape in shapeButtons) {
-    const button = shapeButtons[shape];
-    const canvas = document.createElement('canvas');
-    canvas.width = 50;
-    canvas.height = 50;
-    button.appendChild(canvas);
-
-    if (shape === 'circle') {
-        drawCircleButton(canvas);
-    } else {
-        const sides = {
-            triangle: 3,
-            square: 4,
-            pentagon: 5,
-            hexagon: 6,
-            dodecagon: 12
-        }[shape];
-        drawShapeButton(canvas, sides);
-    }
-}
-
+// Initialize and start the update loop
+resetBalls();
 update();

@@ -4,6 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let mouseX = 0;
     let speed = 0;
+    const maxSpeed = 4; // Adjust this value to set the maximum speed
 
     const updateSpeed = (e) => {
         const containerWidth = container.clientWidth;
@@ -11,7 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const centerX = containerWidth / 2;
         const offsetX = mouseX - centerX;
-        speed = -offsetX / centerX * 2; // Reversed speed direction
+        speed = -offsetX / centerX * maxSpeed; // Reversed speed direction and scaled by maxSpeed
     };
 
     container.addEventListener('mousemove', updateSpeed);
