@@ -126,19 +126,22 @@ document.getElementById('loginButton').addEventListener('click', () => {
 
 // Check for access token in URL
 window.addEventListener('load', () => {
-    const hash = window.location.hash.substring(1);
-    const params = new URLSearchParams(hash);
-    const accessToken = params.get('access_token');
+    const hash = window.location.hash.substring(1); // Get the part of the URL after #
+    const params = new URLSearchParams(hash); // Parse the parameters from the hash
+    const accessToken = params.get('access_token'); // Get the access token
 
     if (accessToken) {
-        initializeSpotifyPlayer(accessToken);
+        // Wait until the Spotify Web Playback SDK is loaded
+        window.onSpotifyWebPlaybackSDKReady = () => {
+            initializeSpotifyPlayer(accessToken); // If there's an access token, initialize the player
+        };
     }
 });
 
 function initializeSpotifyPlayer(token) {
     const player = new Spotify.Player({
         name: 'Web Playback SDK Template',
-        getOAuthToken: cb => { cb(token); },
+        getOAuthToken: cb => { cb(token); }, // Use the access token to authenticate
         volume: 0.5
     });
 
