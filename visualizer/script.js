@@ -16,7 +16,6 @@ function init() {
 // Main animation loop
 function animate() {
     requestAnimationFrame(animate);
-    updateVisualizer(); // Call the visualizer update function
     renderer.render(scene, camera);
 }
 
@@ -50,60 +49,6 @@ for (let i = 1; i <= numRings; i++) {
     const ring = createRing(2, 32, 0xffffff);
     ring.position.z = -i * 0.5;
     rings.push(ring);
-}
-
-/* 
-  _     _             
- | |   (_)            
- | |    _ _ __   __ _ 
- | |   | | '_ \ / _` |
- | |___| | | | | (_| |
- |_____|_|_| |_|\__, |
-                 __/ |
-                |___/ 
-Step 2: Create Lines 
-Lines will stretch along the sides of the tube, adding another layer to our visualizer.
-*/
-
-function createLine(length, color) {
-    const material = new THREE.LineBasicMaterial({ color: color });
-    const points = [];
-    points.push(new THREE.Vector3(-length / 2, 0, 0));
-    points.push(new THREE.Vector3(length / 2, 0, 0));
-    const geometry = new THREE.BufferGeometry().setFromPoints(points);
-    const line = new THREE.Line(geometry, material);
-    scene.add(line);
-    return line;
-}
-
-let lines = [];
-for (let i = 1; i <= 10; i++) {
-    lines.push(createLine(10, 0xffffff));
-}
-
-/* 
-  ____  _ _       _     
- | __ )(_) |_ ___| |__  
- |  _ \| | __/ __| '_ \ 
- | |_) | | || (__| | | |
- |____/|_|\__\___|_| |_|
-                        
-Step 3: Create Blobs 
-Blobs will move towards the camera to create a dynamic visual effect.
-*/
-
-function createBlob(radius, color) {
-    const geometry = new THREE.SphereGeometry(radius, 32, 32);
-    const material = new THREE.MeshBasicMaterial({ color: color });
-    const sphere = new THREE.Mesh(geometry, material);
-    sphere.position.z = -10;
-    scene.add(sphere);
-    return sphere;
-}
-
-let blobs = [];
-for (let i = 0; i < 5; i++) {
-    blobs.push(createBlob(0.5, 0xff0000));
 }
 
 /* 
@@ -161,6 +106,8 @@ window.onSpotifyWebPlaybackSDKReady = () => {
                         rings[i].position.z = -numRings * 0.5;
                     }
                 }
+
+                requestAnimationFrame(updateVisualizer);
             }
 
             audio.play();
