@@ -82,12 +82,12 @@ window.addEventListener('load', () => {
     if (accessToken) {
         // Hide login button
         document.getElementById('loginButton').style.display = 'none';
-        // Wait until the Spotify Web Playback SDK is loaded
-        window.onSpotifyWebPlaybackSDKReady();
+        // Initialize the Spotify Web Playback SDK
+        initializeSpotifyPlayer();
     }
 });
 
-window.onSpotifyWebPlaybackSDKReady = () => {
+function initializeSpotifyPlayer() {
     const player = new Spotify.Player({
         name: 'Web Playback SDK Template',
         getOAuthToken: cb => { cb(accessToken); }, // Provide access token
@@ -136,7 +136,7 @@ window.onSpotifyWebPlaybackSDKReady = () => {
     });
 
     player.connect();
-};
+}
 
 function playMusic(token, device_id) {
     fetch(`https://api.spotify.com/v1/me/player/play?device_id=${device_id}`, {
