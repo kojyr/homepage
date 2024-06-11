@@ -137,7 +137,7 @@ window.addEventListener('load', () => {
 function playMusic(token, device_id) {
     fetch(`https://api.spotify.com/v1/me/player/play?device_id=${device_id}`, {
         method: 'PUT',
-        body: JSON.stringify({ uris: ['spotify:track:YOUR_TRACK_URI'] }), // Replace with your track URI
+        body: JSON.stringify({ uris: ['spotify:track:6v6AOyEwnzthASohlRwYrS?si=cd456a7a108e4153'] }), // Replace with your track URI
         headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${token}`
