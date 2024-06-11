@@ -115,7 +115,7 @@ Set up the Spotify player to play music and provide audio data for the visualize
 */
 
 const clientId = '49a092ec097744df8e6fe06a93132afb'; // Your client ID
-const redirectUri = 'http://www.ollestromdahl.com/visualizer/callback'; // Your GitHub Pages URL with /callback
+const redirectUri = 'http://www.ollestromdahl.com/visualizer/'; // Update your redirect URI
 
 // Login button event listener
 document.getElementById('loginButton').addEventListener('click', () => {
@@ -123,7 +123,6 @@ document.getElementById('loginButton').addEventListener('click', () => {
     const authUrl = `https://accounts.spotify.com/authorize?response_type=token&client_id=${clientId}&scope=${encodeURIComponent(scopes)}&redirect_uri=${encodeURIComponent(redirectUri)}`;
     window.location = authUrl;
 });
-
 
 // Check for access token in URL
 window.addEventListener('load', () => {
@@ -151,8 +150,10 @@ function initializeSpotifyPlayer(token) {
 
     player.addListener('player_state_changed', state => {
         if (state && state.track_window.current_track) {
-            const audio = new Audio(state.track_window.current_track.uri);
+            // Create an audio element and connect to Web Audio API
+            const audio = new Audio();
             audio.crossOrigin = "anonymous";
+            audio.src = state.track_window.current_track.uri;
 
             const audioContext = new (window.AudioContext || window.webkitAudioContext)();
             const track = audioContext.createMediaElementSource(audio);
