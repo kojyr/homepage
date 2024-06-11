@@ -16,7 +16,7 @@ function init() {
 // Main animation loop
 function animate() {
     requestAnimationFrame(animate);
-    camera.position.z -= 0.05;
+    updateVisualizer(); // Call the visualizer update function
     renderer.render(scene, camera);
 }
 
@@ -45,8 +45,11 @@ function createRing(radius, segments, color) {
 }
 
 let rings = [];
-for (let i = 1; i <= 10; i++) {
-    rings.push(createRing(i, 32, 0xffffff));
+const numRings = 100;
+for (let i = 1; i <= numRings; i++) {
+    const ring = createRing(2, 32, 0xffffff);
+    ring.position.z = -i * 0.5;
+    rings.push(ring);
 }
 
 /* 
@@ -110,7 +113,7 @@ for (let i = 0; i < 5; i++) {
   ___) |  __/ |  | |_| | (__\__ \
  |____/ \___|_|   \__|_|\___|___/
                                  
-Step 4: Integrate Spotify Web Playback SDK 
+Step 2: Integrate Spotify Web Playback SDK 
 Set up the Spotify player to play music and provide audio data for the visualizer.
 */
 
@@ -149,19 +152,15 @@ window.onSpotifyWebPlaybackSDKReady = () => {
             function updateVisualizer() {
                 analyser.getByteFrequencyData(dataArray);
 
-                // Update rings, lines, and blobs based on frequency data
-                rings.forEach((ring, index) => {
-                    ring.scale.set(1 + dataArray[index] / 128, 1 + dataArray[index] / 128, 1);
-                });
-
-                blobs.forEach((blob, index) => {
-                    blob.position.z += dataArray[index] / 256;
-                    if (blob.position.z > camera.position.z) {
-                        blob.position.z = -10;
+                // Update rings based on frequency data
+                for (let i = 0; i < numRings; i++) {
+                    const scale = dataArray[i % bufferLength] / 128.0;
+                    rings[i].scale.set(scale, scale, 1);
+                    rings[i].position.z += 0.1;
+                    if (rings[i].position.z > camera.position.z) {
+                        rings[i].position.z = -numRings * 0.5;
                     }
-                });
-
-                requestAnimationFrame(updateVisualizer);
+                }
             }
 
             audio.play();
