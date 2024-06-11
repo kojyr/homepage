@@ -65,55 +65,6 @@ Set up the Spotify player to play music and provide audio data for the visualize
 const clientId = '49a092ec097744df8e6fe06a93132afb'; // Your client ID
 const redirectUri = 'http://www.ollestromdahl.com/visualizer/'; // Update your redirect URI
 
-// Load Spotify SDK and initialize player when ready
-window.onSpotifyWebPlaybackSDKReady = () => {
-    const player = new Spotify.Player({
-        name: 'Web Playback SDK Template',
-        getOAuthToken: cb => { cb(accessToken); }, // Provide access token
-        volume: 0.5
-    });
-
-    player.addListener('ready', ({ device_id }) => {
-        console.log('Ready with Device ID', device_id);
-        // Use the Spotify Web API to start playback
-        playMusic(accessToken, device_id);
-    });
-
-    player.addListener('player_state_changed', state => {
-        if (state && state.track_window.current_track) {
-            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-            const track = audioContext.createMediaStreamSource(player._options.getOAuthToken);
-            const analyser = audioContext.createAnalyser();
-            track.connect(analyser);
-            analyser.connect(audioContext.destination);
-
-            analyser.fftSize = 256;
-            const bufferLength = analyser.frequencyBinCount;
-            const dataArray = new Uint8Array(bufferLength);
-
-            function updateVisualizer() {
-                analyser.getByteFrequencyData(dataArray);
-
-                // Update rings based on frequency data
-                for (let i = 0; i < numRings; i++) {
-                    const scale = dataArray[i % bufferLength] / 128.0;
-                    rings[i].scale.set(scale, scale, 1);
-                    rings[i].position.z += 0.1;
-                    if (rings[i].position.z > camera.position.z) {
-                        rings[i].position.z = -numRings * 0.5;
-                    }
-                }
-
-                requestAnimationFrame(updateVisualizer);
-            }
-
-            updateVisualizer();
-        }
-    });
-
-    player.connect();
-};
-
 // Login button event listener
 document.getElementById('loginButton').addEventListener('click', () => {
     const scopes = 'streaming user-read-email user-read-private';
@@ -133,6 +84,60 @@ window.addEventListener('load', () => {
         window.onSpotifyWebPlaybackSDKReady();
     }
 });
+
+window.onSpotifyWebPlaybackSDKReady = () => {
+    const player = new Spotify.Player({
+        name: 'Web Playback SDK Template',
+        getOAuthToken: cb => { cb(accessToken); }, // Provide access token
+        volume: 0.5
+    });
+
+    player.addListener('ready', ({ device_id }) => {
+        console.log('Ready with Device ID', device_id);
+        // Use the Spotify Web API to start playback
+        playMusic(accessToken, device_id);
+    });
+
+    player.addListener('player_state_changed', state => {
+        if (state && state.track_window.current_track) {
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const analyser = audioContext.createAnalyser();
+
+            player._options.getOAuthToken(accessToken => {
+                const audio = new Audio();
+                audio.src = `https://api.spotify.com/v1/me/player/play?access_token=${accessToken}`;
+                const track = audioContext.createMediaElementSource(audio);
+                track.connect(analyser);
+                analyser.connect(audioContext.destination);
+
+                analyser.fftSize = 256;
+                const bufferLength = analyser.frequencyBinCount;
+                const dataArray = new Uint8Array(bufferLength);
+
+                function updateVisualizer() {
+                    analyser.getByteFrequencyData(dataArray);
+
+                    // Update rings based on frequency data
+                    for (let i = 0; i < numRings; i++) {
+                        const scale = dataArray[i % bufferLength] / 128.0;
+                        rings[i].scale.set(scale, scale, 1);
+                        rings[i].position.z += 0.1;
+                        if (rings[i].position.z > camera.position.z) {
+                            rings[i].position.z = -numRings * 0.5;
+                        }
+                    }
+
+                    requestAnimationFrame(updateVisualizer);
+                }
+
+                updateVisualizer();
+                audio.play();
+            });
+        }
+    });
+
+    player.connect();
+};
 
 function playMusic(token, device_id) {
     fetch(`https://api.spotify.com/v1/me/player/play?device_id=${device_id}`, {
