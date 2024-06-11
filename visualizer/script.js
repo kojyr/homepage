@@ -80,6 +80,8 @@ window.addEventListener('load', () => {
     accessToken = params.get('access_token'); // Get the access token
 
     if (accessToken) {
+        // Hide login button
+        document.getElementById('loginButton').style.display = 'none';
         // Wait until the Spotify Web Playback SDK is loaded
         window.onSpotifyWebPlaybackSDKReady();
     }
@@ -103,10 +105,13 @@ window.onSpotifyWebPlaybackSDKReady = () => {
             const audioContext = new (window.AudioContext || window.webkitAudioContext)();
             const analyser = audioContext.createAnalyser();
 
-            player._options.getOAuthToken(accessToken => {
-                const audio = new Audio();
-                audio.src = `https://api.spotify.com/v1/me/player/play?access_token=${accessToken}`;
-                const track = audioContext.createMediaElementSource(audio);
+            player.getCurrentState().then(state => {
+                if (!state) {
+                    console.error('User is not playing music through the Web Playback SDK');
+                    return;
+                }
+
+                const track = audioContext.createMediaElementSource(player._options.getOAuthToken);
                 track.connect(analyser);
                 analyser.connect(audioContext.destination);
 
@@ -131,7 +136,6 @@ window.onSpotifyWebPlaybackSDKReady = () => {
                 }
 
                 updateVisualizer();
-                audio.play();
             });
         }
     });
