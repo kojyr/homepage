@@ -40,6 +40,7 @@ function createRing(radius, segments, color) {
     const ring = new THREE.Mesh(geometry, material);
     ring.rotation.x = Math.PI / 2;
     scene.add(ring);
+   
     return ring;
 }
 
@@ -68,59 +69,62 @@ const redirectUri = 'http://www.ollestromdahl.com/visualizer/'; // Update your r
 // Login button event listener
 document.getElementById('loginButton').addEventListener('click', () => {
     const scopes = 'streaming user-read-email user-read-private';
-    const authUrl = `https://accounts.spotify.com/authorize?response_type=token&client_id=${clientId}&scope=${encodeURIComponent(scopes)}&redirect_uri=${encodeURIComponent(
-        authUrl = `https://accounts.spotify.com/authorize?response_type=token&client_id=${clientId}&scope=${encodeURIComponent(scopes)}&redirect_uri=${encodeURIComponent(redirectUri)}`;
-        window.location = authUrl;
-    });
-    
-    // Check for access token in URL
-    let accessToken;
-    window.addEventListener('load', () => {
-        const hash = window.location.hash.substring(1); // Get the part of the URL after #
-        const params = new URLSearchParams(hash); // Parse the parameters from the hash
-        accessToken = params.get('access_token'); // Get the access token
-    
-        if (accessToken) {
-            // Hide login button
-            document.getElementById('loginButton').style.display = 'none';
-            // Initialize the Spotify Web Playback SDK
-            initializeSpotifyPlayer();
-        }
-    });
-    
-    function initializeSpotifyPlayer() {
+    const authUrl = `https://accounts.spotify.com/authorize?response_type=token&client_id=${clientId}&scope=${encodeURIComponent(scopes)}&redirect_uri=${encodeURIComponent(redirectUri)}`;
+    window.location = authUrl;
+});
+
+// Check for access token in URL
+let accessToken;
+window.addEventListener('load', () => {
+    const hash = window.location.hash.substring(1); // Get the part of the URL after #
+    const params = new URLSearchParams(hash); // Parse the parameters from the hash
+    accessToken = params.get('access_token'); // Get the access token
+
+    if (accessToken) {
+        // Hide login button
+        document.getElementById('loginButton').style.display = 'none';
+        // Initialize the Spotify Web Playback SDK
+        initializeSpotifyPlayer();
+    }
+});
+
+function initializeSpotifyPlayer() {
+    // Load the Spotify Web Playback SDK script
+    const script = document.createElement('script');
+    script.src = 'https://sdk.scdn.co/spotify-player.js';
+    script.onload = () => {
         window.onSpotifyWebPlaybackSDKReady = () => {
             const player = new Spotify.Player({
                 name: 'Web Playback SDK Template',
                 getOAuthToken: cb => { cb(accessToken); }, // Provide access token
                 volume: 0.5
             });
-    
+
             player.addListener('ready', ({ device_id }) => {
                 console.log('Ready with Device ID', device_id);
                 // Use the Spotify Web API to start playback
                 playMusic(accessToken, device_id);
             });
-    
+
             player.addListener('player_state_changed', state => {
                 if (state && state.track_window.current_track) {
                     const audioContext = new (window.AudioContext || window.webkitAudioContext)();
                     const analyser = audioContext.createAnalyser();
-    
+
                     // Create a dummy audio element to trick the analyser
                     const audio = new Audio();
                     audio.crossOrigin = 'anonymous';
                     const track = audioContext.createMediaElementSource(audio);
                     track.connect(analyser);
                     analyser.connect(audioContext.destination);
-    
+
                     analyser.fftSize = 256;
                     const bufferLength = analyser.frequencyBinCount;
                     const dataArray = new Uint8Array(bufferLength);
-    
+
                     function updateVisualizer() {
                         analyser.getByteFrequencyData(dataArray);
-    
+
                         // Update rings based on frequency data
                         for (let i = 0; i < numRings; i++) {
                             const scale = dataArray[i % bufferLength] / 128.0;
@@ -130,39 +134,33 @@ document.getElementById('loginButton').addEventListener('click', () => {
                                 rings[i].position.z = -numRings * 0.5;
                             }
                         }
-    
+
                         requestAnimationFrame(updateVisualizer);
                     }
-    
+
                     updateVisualizer();
                 }
             });
-    
+
             player.connect();
         };
-        loadSpotifySDK();
-    }
-    
-    function loadSpotifySDK() {
-        const script = document.createElement('script');
-        script.src = 'https://sdk.scdn.co/spotify-player.js';
-        document.body.appendChild(script);
-    }
-    
-    function playMusic(token, device_id) {
-        fetch(`https://api.spotify.com/v1/me/player/play?device_id=${device_id}`, {
-            method: 'PUT',
-            body: JSON.stringify({ uris: ['spotify:track:6v6AOyEwnzthASohlRwYrS?si=cd456a7a108e4153'] }), // Replace with your track URI
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
-            }
-        }).then(response => {
-            if (!response.ok) {
-                console.error('Failed to start playback:', response);
-            }
-        }).catch(error => {
-            console.error('Error starting playback:', error);
-        });
-    }
-    
+    };
+    document.body.appendChild(script);
+}
+
+function playMusic(token, device_id) {
+    fetch(`https://api.spotify.com/v1/me/player/play?device_id=${device_id}`, {
+        method: 'PUT',
+        body: JSON.stringify({ uris: ['spotify:track:6v6AOyEwnzthASohlRwYrS?si=cd456a7a108e4153'] }), // Replace with your track URI
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        }
+    }).then(response => {
+        if (!response.ok) {
+            console.error('Failed to start playback:', response);
+        }
+    }).catch(error => {
+        console.error('Error starting playback:', error);
+    });
+}
