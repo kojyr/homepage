@@ -115,7 +115,7 @@ Set up the Spotify player to play music and provide audio data for the visualize
 */
 
 const clientId = '49a092ec097744df8e6fe06a93132afb'; // Your client ID
-const redirectUri = 'http://localhost:3000/callback'; // Your redirect URI
+const redirectUri = 'http://www.ollestromdahl.com/visualizer/callback'; // Your GitHub Pages URL with /callback
 
 // Login button event listener
 document.getElementById('loginButton').addEventListener('click', () => {
@@ -123,6 +123,7 @@ document.getElementById('loginButton').addEventListener('click', () => {
     const authUrl = `https://accounts.spotify.com/authorize?response_type=token&client_id=${clientId}&scope=${encodeURIComponent(scopes)}&redirect_uri=${encodeURIComponent(redirectUri)}`;
     window.location = authUrl;
 });
+
 
 // Check for access token in URL
 window.addEventListener('load', () => {
