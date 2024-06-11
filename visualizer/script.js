@@ -117,46 +117,24 @@ Set up the Spotify player to play music and provide audio data for the visualize
 const clientId = '49a092ec097744df8e6fe06a93132afb'; // Your client ID
 const redirectUri = 'http://www.ollestromdahl.com/visualizer/'; // Update your redirect URI
 
-// Login button event listener
-document.getElementById('loginButton').addEventListener('click', () => {
-    const scopes = 'streaming user-read-email user-read-private';
-    const authUrl = `https://accounts.spotify.com/authorize?response_type=token&client_id=${clientId}&scope=${encodeURIComponent(scopes)}&redirect_uri=${encodeURIComponent(redirectUri)}`;
-    window.location = authUrl;
-});
-
-// Check for access token in URL
-window.addEventListener('load', () => {
-    const hash = window.location.hash.substring(1); // Get the part of the URL after #
-    const params = new URLSearchParams(hash); // Parse the parameters from the hash
-    const accessToken = params.get('access_token'); // Get the access token
-
-    if (accessToken) {
-        // Wait until the Spotify Web Playback SDK is loaded
-        window.onSpotifyWebPlaybackSDKReady = () => {
-            initializeSpotifyPlayer(accessToken); // If there's an access token, initialize the player
-        };
-    }
-});
-
-function initializeSpotifyPlayer(token) {
+// Load Spotify SDK and initialize player when ready
+window.onSpotifyWebPlaybackSDKReady = () => {
     const player = new Spotify.Player({
         name: 'Web Playback SDK Template',
-        getOAuthToken: cb => { cb(token); }, // Use the access token to authenticate
+        getOAuthToken: cb => { cb(accessToken); }, // Provide access token
         volume: 0.5
     });
 
     player.addListener('ready', ({ device_id }) => {
         console.log('Ready with Device ID', device_id);
         // Use the Spotify Web API to start playback
-        playMusic(token, device_id);
+        playMusic(accessToken, device_id);
     });
 
     player.addListener('player_state_changed', state => {
         if (state && state.track_window.current_track) {
-            // Create an audio element and connect to Web Audio API
-            const audio = new Audio();
+            const audio = new Audio(state.track_window.current_track.uri);
             audio.crossOrigin = "anonymous";
-            audio.src = state.track_window.current_track.uri;
 
             const audioContext = new (window.AudioContext || window.webkitAudioContext)();
             const track = audioContext.createMediaElementSource(audio);
@@ -192,12 +170,32 @@ function initializeSpotifyPlayer(token) {
     });
 
     player.connect();
-}
+};
+
+// Login button event listener
+document.getElementById('loginButton').addEventListener('click', () => {
+    const scopes = 'streaming user-read-email user-read-private';
+    const authUrl = `https://accounts.spotify.com/authorize?response_type=token&client_id=${clientId}&scope=${encodeURIComponent(scopes)}&redirect_uri=${encodeURIComponent(redirectUri)}`;
+    window.location = authUrl;
+});
+
+// Check for access token in URL
+let accessToken;
+window.addEventListener('load', () => {
+    const hash = window.location.hash.substring(1); // Get the part of the URL after #
+    const params = new URLSearchParams(hash); // Parse the parameters from the hash
+    accessToken = params.get('access_token'); // Get the access token
+
+    if (accessToken) {
+        // Wait until the Spotify Web Playback SDK is loaded
+        window.onSpotifyWebPlaybackSDKReady();
+    }
+});
 
 function playMusic(token, device_id) {
     fetch(`https://api.spotify.com/v1/me/player/play?device_id=${device_id}`, {
         method: 'PUT',
-        body: JSON.stringify({ uris: ['spotify:track:YOUR_TRACK_URI'] }), // Replace with your track URI
+        body: JSON.stringify({ uris: ['spotify:track:6v6AOyEwnzthASohlRwYrS?si=cd456a7a108e4153'] }), // Replace with your track URI
         headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${token}`
@@ -210,16 +208,3 @@ function playMusic(token, device_id) {
         console.error('Error starting playback:', error);
     });
 }
-
-/* 
-  _          _                   _       
- | |    __ _| |_   _____ _ __   (_) __ _ 
- | |   / _` | \ \ / / _ \ '__|  | |/ _` |
- | |__| (_| | |\ V /  __/ |    _| | (_| |
- |_____\__,_|_| \_/ \___|_|   (_)_|\__,_|
-                                         
-Step 5: Analyze Music with Web Audio API 
-Analyze the audio data to create reactive visuals based on the music's frequency.
-*/
-
-// The audio context and visualizer update function are included in the player_state_changed event listener above.
