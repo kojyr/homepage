@@ -46,7 +46,7 @@ function createRing(radius, segments, color) {
 let rings = [];
 const numRings = 100;
 for (let i = 1; i <= numRings; i++) {
-    const ring = createRing(2, 32, 0xffffff);
+    const ring = createRing(2, 32, 0xEFEAD8); // Using the specified color
     ring.position.z = -i * 0.5;
     rings.push(ring);
 }
@@ -81,11 +81,8 @@ window.onSpotifyWebPlaybackSDKReady = () => {
 
     player.addListener('player_state_changed', state => {
         if (state && state.track_window.current_track) {
-            const audio = new Audio(state.track_window.current_track.uri);
-            audio.crossOrigin = "anonymous";
-
             const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-            const track = audioContext.createMediaElementSource(audio);
+            const track = audioContext.createMediaStreamSource(player._options.getOAuthToken);
             const analyser = audioContext.createAnalyser();
             track.connect(analyser);
             analyser.connect(audioContext.destination);
@@ -110,7 +107,6 @@ window.onSpotifyWebPlaybackSDKReady = () => {
                 requestAnimationFrame(updateVisualizer);
             }
 
-            audio.play();
             updateVisualizer();
         }
     });
@@ -141,7 +137,7 @@ window.addEventListener('load', () => {
 function playMusic(token, device_id) {
     fetch(`https://api.spotify.com/v1/me/player/play?device_id=${device_id}`, {
         method: 'PUT',
-        body: JSON.stringify({ uris: ['spotify:track:6v6AOyEwnzthASohlRwYrS?si=cd456a7a108e4153'] }), // Replace with your track URI
+        body: JSON.stringify({ uris: ['spotify:track:YOUR_TRACK_URI'] }), // Replace with your track URI
         headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${token}`
