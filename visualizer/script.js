@@ -82,45 +82,56 @@ window.onSpotifyWebPlaybackSDKReady = () => {
     player.addListener('player_state_changed', state => {
         if (state && state.track_window.current_track) {
             console.log('Track changed:', state.track_window.current_track.name); // Debugging
+
             const audioContext = new (window.AudioContext || window.webkitAudioContext)();
             const analyser = audioContext.createAnalyser();
-
-            // Create a dummy audio element to trick the analyser
-            const audio = new Audio();
-            audio.crossOrigin = 'anonymous';
-            const track = audioContext.createMediaElementSource(audio);
-            track.connect(analyser);
-            analyser.connect(audioContext.destination);
-
             analyser.fftSize = 256;
             const bufferLength = analyser.frequencyBinCount;
             const dataArray = new Uint8Array(bufferLength);
 
-            function updateVisualizer() {
-                analyser.getByteFrequencyData(dataArray);
-
-                // Log the frequency data for debugging
-                console.log('Frequency Data:', dataArray);
-
-                // Update rings based on frequency data
-                for (let i = 0; i < numRings; i++) {
-                    const scale = dataArray[i % bufferLength] / 128.0;
-                    rings[i].scale.set(scale, scale, 1);
-                    rings[i].position.z += 0.1;
-                    if (rings[i].position.z > camera.position.z) {
-                        rings[i].position.z = -numRings * 0.5;
-                    }
+            player.getCurrentState().then(state => {
+                if (!state) {
+                    console.error('User is not playing music through the Web Playback SDK');
+                    return;
                 }
 
-                requestAnimationFrame(updateVisualizer);
-            }
+                const { position, duration, track_window: { current_track } } = state;
 
-            updateVisualizer();
+                const audioElement = new Audio();
+                audioElement.crossOrigin = 'anonymous';
+                audioElement.src = `https://api.spotify.com/v1/me/player/play?device_id=${state.device_id}`;
+                const source = audioContext.createMediaElementSource(audioElement);
+                source.connect(analyser);
+                analyser.connect(audioContext.destination);
+
+                audioElement.play();
+
+                function updateVisualizer() {
+                    analyser.getByteFrequencyData(dataArray);
+
+                    // Log the frequency data for debugging
+                    console.log('Frequency Data:', dataArray);
+
+                    // Update rings based on frequency data
+                    for (let i = 0; i < numRings; i++) {
+                        const scale = dataArray[i % bufferLength] / 128.0;
+                        rings[i].scale.set(scale, scale, 1);
+                        rings[i].position.z += 0.1;
+                        if (rings[i].position.z > camera.position.z) {
+                            rings[i].position.z = -numRings * 0.5;
+                        }
+                    }
+
+                    requestAnimationFrame(updateVisualizer);
+                }
+
+                updateVisualizer();
+            });
         }
     });
 
     player.connect();
-}
+};
 
 function playMusic(token, device_id) {
     fetch(`https://api.spotify.com/v1/me/player/play?device_id=${device_id}`, {
