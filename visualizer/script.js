@@ -1,4 +1,4 @@
-// Initialize Three.js scene, camera, and renderer V3
+// Initialize Three.js scene, camera, and renderer V4
 let scene, camera, renderer;
 
 function init() {
@@ -66,7 +66,7 @@ window.addEventListener('load', () => {
     }
 });
 
-function initializeSpotifyPlayer() {
+window.onSpotifyWebPlaybackSDKReady = () => {
     const player = new Spotify.Player({
         name: 'Web Playback SDK Template',
         getOAuthToken: cb => { cb(accessToken); }, // Provide access token
@@ -85,52 +85,46 @@ function initializeSpotifyPlayer() {
         const bufferLength = analyser.frequencyBinCount;
         const dataArray = new Uint8Array(bufferLength);
 
-        player.getCurrentState().then(state => {
-            if (!state) {
-                console.error('User is not playing music through the Web Playback SDK');
-                return;
-            }
+        player.addListener('player_state_changed', state => {
+            if (state && state.track_window.current_track) {
+                console.log('Track changed:', state.track_window.current_track.name); // Debugging
 
-            const audioElement = new Audio();
-            audioElement.crossOrigin = 'anonymous';
-            audioElement.src = `https://api.spotify.com/v1/me/player/play?device_id=${device_id}`;
-            const source = audioContext.createMediaElementSource(audioElement);
-            source.connect(analyser);
-            analyser.connect(audioContext.destination);
+                // Use the Spotify Web Playback SDK's audio
+                const audioElement = new Audio();
+                audioElement.crossOrigin = 'anonymous';
+                audioElement.src = `https://api.spotify.com/v1/me/player/play?device_id=${device_id}`;
+                const source = audioContext.createMediaElementSource(audioElement);
+                source.connect(analyser);
+                analyser.connect(audioContext.destination);
 
-            audioElement.play();
+                audioElement.play();
 
-            function updateVisualizer() {
-                analyser.getByteFrequencyData(dataArray);
+                function updateVisualizer() {
+                    analyser.getByteFrequencyData(dataArray);
 
-                // Log the frequency data for debugging
-                console.log('Frequency Data:', dataArray);
+                    // Log the frequency data for debugging
+                    console.log('Frequency Data:', dataArray);
 
-                // Update rings based on frequency data
-                for (let i = 0; i < numRings; i++) {
-                    const scale = dataArray[i % bufferLength] / 128.0;
-                    rings[i].scale.set(scale, scale, 1);
-                    rings[i].position.z += 0.1;
-                    if (rings[i].position.z > camera.position.z) {
-                        rings[i].position.z = -numRings * 0.5;
+                    // Update rings based on frequency data
+                    for (let i = 0; i < numRings; i++) {
+                        const scale = dataArray[i % bufferLength] / 128.0;
+                        rings[i].scale.set(scale, scale, 1);
+                        rings[i].position.z += 0.1;
+                        if (rings[i].position.z > camera.position.z) {
+                            rings[i].position.z = -numRings * 0.5;
+                        }
                     }
+
+                    requestAnimationFrame(updateVisualizer);
                 }
 
-                requestAnimationFrame(updateVisualizer);
+                updateVisualizer();
             }
-
-            updateVisualizer();
         });
-    });
 
-    player.addListener('player_state_changed', state => {
-        if (state && state.track_window.current_track) {
-            console.log('Track changed:', state.track_window.current_track.name); // Debugging
-        }
+        player.connect();
     });
-
-    player.connect();
-}
+};
 
 function playMusic(token, device_id) {
     fetch(`https://api.spotify.com/v1/me/player/play?device_id=${device_id}`, {
