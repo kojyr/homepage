@@ -1,4 +1,4 @@
-// Initialize Three.js scene, camera, and renderer V2
+// Initialize Three.js scene, camera, and renderer V3
 let scene, camera, renderer;
 
 function init() {
@@ -66,7 +66,7 @@ window.addEventListener('load', () => {
     }
 });
 
-window.onSpotifyWebPlaybackSDKReady = () => {
+function initializeSpotifyPlayer() {
     const player = new Spotify.Player({
         name: 'Web Playback SDK Template',
         getOAuthToken: cb => { cb(accessToken); }, // Provide access token
@@ -130,7 +130,7 @@ window.onSpotifyWebPlaybackSDKReady = () => {
     });
 
     player.connect();
-};
+}
 
 function playMusic(token, device_id) {
     fetch(`https://api.spotify.com/v1/me/player/play?device_id=${device_id}`, {
