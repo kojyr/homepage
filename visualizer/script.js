@@ -1,4 +1,4 @@
-// Initialize Three.js scene, camera, and renderer
+// Initialize Three.js scene, camera, and renderer V2
 let scene, camera, renderer;
 
 function init() {
@@ -77,56 +77,55 @@ window.onSpotifyWebPlaybackSDKReady = () => {
         console.log('Ready with Device ID', device_id);
         // Use the Spotify Web API to start playback
         playMusic(accessToken, device_id);
+
+        // Set up audio context and analyzer
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        const analyser = audioContext.createAnalyser();
+        analyser.fftSize = 256;
+        const bufferLength = analyser.frequencyBinCount;
+        const dataArray = new Uint8Array(bufferLength);
+
+        player.getCurrentState().then(state => {
+            if (!state) {
+                console.error('User is not playing music through the Web Playback SDK');
+                return;
+            }
+
+            const audioElement = new Audio();
+            audioElement.crossOrigin = 'anonymous';
+            audioElement.src = `https://api.spotify.com/v1/me/player/play?device_id=${device_id}`;
+            const source = audioContext.createMediaElementSource(audioElement);
+            source.connect(analyser);
+            analyser.connect(audioContext.destination);
+
+            audioElement.play();
+
+            function updateVisualizer() {
+                analyser.getByteFrequencyData(dataArray);
+
+                // Log the frequency data for debugging
+                console.log('Frequency Data:', dataArray);
+
+                // Update rings based on frequency data
+                for (let i = 0; i < numRings; i++) {
+                    const scale = dataArray[i % bufferLength] / 128.0;
+                    rings[i].scale.set(scale, scale, 1);
+                    rings[i].position.z += 0.1;
+                    if (rings[i].position.z > camera.position.z) {
+                        rings[i].position.z = -numRings * 0.5;
+                    }
+                }
+
+                requestAnimationFrame(updateVisualizer);
+            }
+
+            updateVisualizer();
+        });
     });
 
     player.addListener('player_state_changed', state => {
         if (state && state.track_window.current_track) {
             console.log('Track changed:', state.track_window.current_track.name); // Debugging
-
-            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-            const analyser = audioContext.createAnalyser();
-            analyser.fftSize = 256;
-            const bufferLength = analyser.frequencyBinCount;
-            const dataArray = new Uint8Array(bufferLength);
-
-            player.getCurrentState().then(state => {
-                if (!state) {
-                    console.error('User is not playing music through the Web Playback SDK');
-                    return;
-                }
-
-                const { position, duration, track_window: { current_track } } = state;
-
-                const audioElement = new Audio();
-                audioElement.crossOrigin = 'anonymous';
-                audioElement.src = `https://api.spotify.com/v1/me/player/play?device_id=${state.device_id}`;
-                const source = audioContext.createMediaElementSource(audioElement);
-                source.connect(analyser);
-                analyser.connect(audioContext.destination);
-
-                audioElement.play();
-
-                function updateVisualizer() {
-                    analyser.getByteFrequencyData(dataArray);
-
-                    // Log the frequency data for debugging
-                    console.log('Frequency Data:', dataArray);
-
-                    // Update rings based on frequency data
-                    for (let i = 0; i < numRings; i++) {
-                        const scale = dataArray[i % bufferLength] / 128.0;
-                        rings[i].scale.set(scale, scale, 1);
-                        rings[i].position.z += 0.1;
-                        if (rings[i].position.z > camera.position.z) {
-                            rings[i].position.z = -numRings * 0.5;
-                        }
-                    }
-
-                    requestAnimationFrame(updateVisualizer);
-                }
-
-                updateVisualizer();
-            });
         }
     });
 
