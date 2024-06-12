@@ -22,18 +22,7 @@ function animate() {
 // Call init to set everything up
 init();
 
-/* 
-  ____  _            
- / ___|| |_ _ __ __ _ 
- \___ \| __| '__/ _` |
-  ___) | |_| | | (_| |
- |____/ \__|_|  \__,_|
-                      
-Step 1: Create Rings 
-We will create multiple rings to form the visualizer's tube-like structure. 
-These rings will vary in size and properties to create an engaging effect.
-*/
-
+// Create rings to form the visualizer's tube-like structure
 function createRing(radius, segments, color) {
     const geometry = new THREE.RingGeometry(radius - 0.1, radius, segments);
     const material = new THREE.MeshBasicMaterial({ color: color, side: THREE.DoubleSide });
@@ -51,17 +40,7 @@ for (let i = 1; i <= numRings; i++) {
     rings.push(ring);
 }
 
-/* 
-  ____            _   _         
- / ___|  ___ _ __| |_(_) ___ ___ 
- \___ \ / _ \ '__| __| |/ __/ __|
-  ___) |  __/ |  | |_| | (__\__ \
- |____/ \___|_|   \__|_|\___|___/
-                                 
-Step 2: Integrate Spotify Web Playback SDK 
-Set up the Spotify player to play music and provide audio data for the visualizer.
-*/
-
+// Integrate Spotify Web Playback SDK
 const clientId = '49a092ec097744df8e6fe06a93132afb'; // Your client ID
 const redirectUri = 'http://www.ollestromdahl.com/visualizer/'; // Update your redirect URI
 
@@ -83,18 +62,11 @@ window.addEventListener('load', () => {
         // Hide login button
         document.getElementById('loginButton').style.display = 'none';
         // Initialize the Spotify Web Playback SDK
-        loadSpotifySDK();
+        initializeSpotifyPlayer();
     }
 });
 
-function loadSpotifySDK() {
-    const script = document.createElement('script');
-    script.src = 'https://sdk.scdn.co/spotify-player.js';
-    script.onload = () => initializeSpotifyPlayer();
-    document.body.appendChild(script);
-}
-
-function initializeSpotifyPlayer() {
+function onSpotifyWebPlaybackSDKReady() {
     const player = new Spotify.Player({
         name: 'Web Playback SDK Template',
         getOAuthToken: cb => { cb(accessToken); }, // Provide access token
@@ -149,7 +121,7 @@ function initializeSpotifyPlayer() {
 function playMusic(token, device_id) {
     fetch(`https://api.spotify.com/v1/me/player/play?device_id=${device_id}`, {
         method: 'PUT',
-        body: JSON.stringify({ uris: ['spotify:track:6v6AOyEwnzthASohlRwYrS?si=cd456a7a108e4153'] }), // Play a specific track
+        body: JSON.stringify({ uris: ['spotify:track:6v6AOyEwnzthASohlRwYrS?si=cd456a7a108e4153'] }), // Replace with your track URI
         headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${token}`
