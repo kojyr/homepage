@@ -66,7 +66,7 @@ window.addEventListener('load', () => {
     }
 });
 
-function onSpotifyWebPlaybackSDKReady() {
+window.onSpotifyWebPlaybackSDKReady = () => {
     const player = new Spotify.Player({
         name: 'Web Playback SDK Template',
         getOAuthToken: cb => { cb(accessToken); }, // Provide access token
