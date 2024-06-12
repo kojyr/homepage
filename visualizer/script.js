@@ -49,118 +49,116 @@ for (let i = 1; i <= numRings; i++) {
     const ring = createRing(2, 32, 0xEFEAD8); // Using the specified color
     ring.position.z = -i * 0.5;
     rings.push(ring);
+}
+
+/* 
+  ____            _   _         
+ / ___|  ___ _ __| |_(_) ___ ___ 
+ \___ \ / _ \ '__| __| |/ __/ __|
+  ___) |  __/ |  | |_| | (__\__ \
+ |____/ \___|_|   \__|_|\___|___/
+                                 
+Step 2: Integrate Spotify Web Playback SDK 
+Set up the Spotify player to play music and provide audio data for the visualizer.
+*/
+
+const clientId = '49a092ec097744df8e6fe06a93132afb'; // Your client ID
+const redirectUri = 'http://www.ollestromdahl.com/visualizer/'; // Update your redirect URI
+
+// Login button event listener
+document.getElementById('loginButton').addEventListener('click', () => {
+    const scopes = 'streaming user-read-email user-read-private';
+    const authUrl = `https://accounts.spotify.com/authorize?response_type=token&client_id=${clientId}&scope=${encodeURIComponent(scopes)}&redirect_uri=${encodeURIComponent(redirectUri)}`;
+    window.location = authUrl;
+});
+
+// Check for access token in URL
+let accessToken;
+window.addEventListener('load', () => {
+    const hash = window.location.hash.substring(1); // Get the part of the URL after #
+    const params = new URLSearchParams(hash); // Parse the parameters from the hash
+    accessToken = params.get('access_token'); // Get the access token
+
+    if (accessToken) {
+        // Hide login button
+        document.getElementById('loginButton').style.display = 'none';
+        // Initialize the Spotify Web Playback SDK
+        loadSpotifySDK();
     }
-    
-    /* 
-      ____            _   _         
-     / ___|  ___ _ __| |_(_) ___ ___ 
-     \___ \ / _ \ '__| __| |/ __/ __|
-      ___) |  __/ |  | |_| | (__\__ \
-     |____/ \___|_|   \__|_|\___|___/
-                                     
-    Step 2: Integrate Spotify Web Playback SDK 
-    Set up the Spotify player to play music and provide audio data for the visualizer.
-    */
-    
-    const clientId = '49a092ec097744df8e6fe06a93132afb'; // Your client ID
-    const redirectUri = 'http://www.ollestromdahl.com/visualizer/'; // Update your redirect URI
-    
-    // Login button event listener
-    document.getElementById('loginButton').addEventListener('click', () => {
-        const scopes = 'streaming user-read-email user-read-private';
-        const authUrl = `https://accounts.spotify.com/authorize?response_type=token&client_id=${clientId}&scope=${encodeURIComponent(scopes)}&redirect_uri=${encodeURIComponent(redirectUri)}`;
-        window.location = authUrl;
+});
+
+function loadSpotifySDK() {
+    const script = document.createElement('script');
+    script.src = 'https://sdk.scdn.co/spotify-player.js';
+    script.onload = () => initializeSpotifyPlayer();
+    document.body.appendChild(script);
+}
+
+function initializeSpotifyPlayer() {
+    const player = new Spotify.Player({
+        name: 'Web Playback SDK Template',
+        getOAuthToken: cb => { cb(accessToken); }, // Provide access token
+        volume: 0.5
     });
-    
-    // Check for access token in URL
-    let accessToken;
-    window.addEventListener('load', () => {
-        const hash = window.location.hash.substring(1); // Get the part of the URL after #
-        const params = new URLSearchParams(hash); // Parse the parameters from the hash
-        accessToken = params.get('access_token'); // Get the access token
-    
-        if (accessToken) {
-            // Hide login button
-            document.getElementById('loginButton').style.display = 'none';
-            // Initialize the Spotify Web Playback SDK
-            initializeSpotifyPlayer();
+
+    player.addListener('ready', ({ device_id }) => {
+        console.log('Ready with Device ID', device_id);
+        // Use the Spotify Web API to start playback
+        playMusic(accessToken, device_id);
+    });
+
+    player.addListener('player_state_changed', state => {
+        if (state && state.track_window.current_track) {
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const analyser = audioContext.createAnalyser();
+
+            // Create a dummy audio element to trick the analyser
+            const audio = new Audio();
+            audio.crossOrigin = 'anonymous';
+            const track = audioContext.createMediaElementSource(audio);
+            track.connect(analyser);
+            analyser.connect(audioContext.destination);
+
+            analyser.fftSize = 256;
+            const bufferLength = analyser.frequencyBinCount;
+            const dataArray = new Uint8Array(bufferLength);
+
+            function updateVisualizer() {
+                analyser.getByteFrequencyData(dataArray);
+
+                // Update rings based on frequency data
+                for (let i = 0; i < numRings; i++) {
+                    const scale = dataArray[i % bufferLength] / 128.0;
+                    rings[i].scale.set(scale, scale, 1);
+                    rings[i].position.z += 0.1;
+                    if (rings[i].position.z > camera.position.z) {
+                        rings[i].position.z = -numRings * 0.5;
+                    }
+                }
+
+                requestAnimationFrame(updateVisualizer);
+            }
+
+            updateVisualizer();
         }
     });
-    
-    function initializeSpotifyPlayer() {
-        // Load the Spotify Web Playback SDK script
-        const script = document.createElement('script');
-        script.src = 'https://sdk.scdn.co/spotify-player.js';
-        script.onload = () => {
-            window.onSpotifyWebPlaybackSDKReady = () => {
-                const player = new Spotify.Player({
-                    name: 'Web Playback SDK Template',
-                    getOAuthToken: cb => { cb(accessToken); }, // Provide access token
-                    volume: 0.5
-                });
-    
-                player.addListener('ready', ({ device_id }) => {
-                    console.log('Ready with Device ID', device_id);
-                    // Use the Spotify Web API to start playback
-                    playMusic(accessToken, device_id);
-                });
-    
-                player.addListener('player_state_changed', state => {
-                    if (state && state.track_window.current_track) {
-                        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                        const analyser = audioContext.createAnalyser();
-    
-                        // Create a dummy audio element to trick the analyser
-                        const audio = new Audio();
-                        audio.crossOrigin = 'anonymous';
-                        const track = audioContext.createMediaElementSource(audio);
-                        track.connect(analyser);
-                        analyser.connect(audioContext.destination);
-    
-                        analyser.fftSize = 256;
-                        const bufferLength = analyser.frequencyBinCount;
-                        const dataArray = new Uint8Array(bufferLength);
-    
-                        function updateVisualizer() {
-                            analyser.getByteFrequencyData(dataArray);
-    
-                            // Update rings based on frequency data
-                            for (let i = 0; i < numRings; i++) {
-                                const scale = dataArray[i % bufferLength] / 128.0;
-                                rings[i].scale.set(scale, scale, 1);
-                                rings[i].position.z += 0.1;
-                                if (rings[i].position.z > camera.position.z) {
-                                    rings[i].position.z = -numRings * 0.5;
-                                }
-                            }
-    
-                            requestAnimationFrame(updateVisualizer);
-                        }
-    
-                        updateVisualizer();
-                    }
-                });
-    
-                player.connect();
-            };
-        };
-        document.body.appendChild(script);
-    }
-    
-    function playMusic(token, device_id) {
-        fetch(`https://api.spotify.com/v1/me/player/play?device_id=${device_id}`, {
-            method: 'PUT',
-            body: JSON.stringify({ uris: ['spotify:track:6v6AOyEwnzthASohlRwYrS?si=cd456a7a108e4153'] }), // Replace with your track URI
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
-            }
-        }).then(response => {
-            if (!response.ok) {
-                console.error('Failed to start playback:', response);
-            }
-        }).catch(error => {
-            console.error('Error starting playback:', error);
-        });
-    }
-    
+
+    player.connect();
+}
+
+function playMusic(token, device_id) {
+    fetch(`https://api.spotify.com/v1/me/player/play?device_id=${device_id}`, {
+        method: 'PUT',
+        body: JSON.stringify({ uris: ['spotify:track:6v6AOyEwnzthASohlRwYrS?si=cd456a7a108e4153'] }), // Replace with your track URI
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        }
+    }).then(response => {
+        if (!response.ok) {
+            console.error('Failed to start playback:', response);
+        }
+    }).catch(error => {
+        console.error('Error starting playback:', error);
+    });
+}
