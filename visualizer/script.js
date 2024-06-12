@@ -48,8 +48,7 @@ const numRings = 100;
 for (let i = 1; i <= numRings; i++) {
     const ring = createRing(2, 32, 0xEFEAD8); // Using the specified color
     ring.position.z = -i * 0.5;
-    rings.push(r
-        rings.push(ring);
+    rings.push(ring);
     }
     
     /* 
