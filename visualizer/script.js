@@ -81,6 +81,7 @@ function onSpotifyWebPlaybackSDKReady() {
 
     player.addListener('player_state_changed', state => {
         if (state && state.track_window.current_track) {
+            console.log('Track changed:', state.track_window.current_track.name); // Debugging
             const audioContext = new (window.AudioContext || window.webkitAudioContext)();
             const analyser = audioContext.createAnalyser();
 
@@ -97,6 +98,9 @@ function onSpotifyWebPlaybackSDKReady() {
 
             function updateVisualizer() {
                 analyser.getByteFrequencyData(dataArray);
+
+                // Log the frequency data for debugging
+                console.log('Frequency Data:', dataArray);
 
                 // Update rings based on frequency data
                 for (let i = 0; i < numRings; i++) {
