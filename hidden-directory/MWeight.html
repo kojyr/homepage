@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Weight Progression Chart</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
+  <style>
+      body { 
+          font-family: Arial, sans-serif; 
+          background-color: #0d1117; /* Dark grey with a hint of blue */
+          color: #c9d1d9; /* Soft light grey for text */
+          margin: 40px;
+      }
+      #chart-container {
+          width: 100%; 
+          max-width: 800px; /* Increased size */
+          height: 400px; /* Make chart larger */
+          margin: auto;
+          padding: 20px;
+          background: #0d1117;
+          border-radius: 10px;
+      }
+  </style>
+</head>
+<body>
+  <h2 style="text-align:center;">Weight Progression</h2>
+  <div style="text-align: center; margin-bottom: 20px;">
+      <label>
+          <input type="checkbox" id="toggleProjection" checked>
+          Trendline (EWMA)
+      </label>
+  </div>
+  <div id="chart-container">
+      <canvas id="weightChart"></canvas>
+  </div>
+
+  <script>
+      var ctx = document.getElementById('weightChart').getContext('2d');
+      
+      var dates = [
+        "2024-12-06", "2024-12-13", "2024-12-20", "2024-12-27",
+        "2025-01-03", "2025-01-10", "2025-01-17", "2025-01-24",
+        "2025-01-31", "2025-02-07", "2025-02-14", "2025-02-19", 
+        "2025-02-22", "2025-02-27", "2025-03-03", "2025-03-10",
+        "2025-03-17", "2025-03-24", "2025-03-31", "2025-04-07",
+        "2025-04-14", "2025-04-21", "2025-04-28", "2025-05-06",
+        "2025-05-12", "2025-05-20", "2025-05-27", "2025-06-03",
+        "2025-06-10"    
+      ];
+
+      var weights = [
+        34.8, 34.6, 34.5, 33.8, 35.1, 34.5, 34.4, 34.3, 34.7,
+        34.6, 34.4, 34.3, 33.0, 33.7, 34.7, 36.2, 37.3, 37.2,
+        37.9, 38.6, 37.9, 38.5, 38.2, 37.9, 38.6, 39.0, 39.0,
+        39.7, 40.4
+      ];
+
+      // Build an array of weight changes for tooltip display
+      var weightChanges = ["N/A"];
+      for (let i = 1; i < weights.length; i++) {
+          let change = (weights[i] - weights[i - 1]).toFixed(1).replace('.', ',');
+          weightChanges.push((change >= 0 ? '+' : '') + change + " kg");
+      }
+
+      var minDate = new Date(Math.min(...dates.map(date => new Date(date))));
+      var maxDate = new Date("2025-06-01");
+
+      // Custom plugin to draw background regions (red, yellow, green zones)
+      Chart.register({
+          id: 'backgroundPlugin',
+          beforeDraw: (chart) => {
+              const { ctx, chartArea: { left, right, top, bottom } } = chart;
+              ctx.save();
+              
+              const heightInMeters = 1.63;
+              const bmiThresholds = {
+                  severe: 16.0,
+                  moderate: 16.9,
+                  mild: 18.4,
+                  normal: 24.9,
+                  overweight: 29.9
+              };
+              const zones = [
+                  { yMin: 0, yMax: bmiThresholds.severe * heightInMeters * heightInMeters, color: 'rgba(153, 0, 0, 0.3)' },         // Deep Red
+                  { yMin: bmiThresholds.severe * heightInMeters * heightInMeters, yMax: bmiThresholds.moderate * heightInMeters * heightInMeters, color: 'rgba(255, 90, 0, 0.25)' }, // Reddish Orange
+                  { yMin: bmiThresholds.moderate * heightInMeters * heightInMeters, yMax: bmiThresholds.mild * heightInMeters * heightInMeters, color: 'rgba(255, 165, 0, 0.2)' },   // Orange
+                  { yMin: bmiThresholds.mild * heightInMeters * heightInMeters, yMax: bmiThresholds.normal * heightInMeters * heightInMeters, color: 'rgba(0, 255, 0, 0.1)' },       // Green
+                  { yMin: bmiThresholds.normal * heightInMeters * heightInMeters, yMax: bmiThresholds.overweight * heightInMeters * heightInMeters, color: 'rgba(255, 165, 0, 0.2)' } // Orange
+              ];
+              
+              zones
+                  .filter(zone => zone.yMax > 30 && zone.yMin < 70) // Only draw within visible y-axis
+                  .forEach(zone => {
+                      const clippedYMin = Math.max(zone.yMin, 30);
+                      const clippedYMax = Math.min(zone.yMax, 70);
+                      const yMin = chart.scales.y.getPixelForValue(clippedYMin);
+                      const yMax = chart.scales.y.getPixelForValue(clippedYMax);
+                      ctx.fillStyle = zone.color;
+                      ctx.fillRect(left, yMax, right - left, yMin - yMax);
+                  });
+              
+              ctx.restore();
+          }
+      });
+
+      Chart.register({
+          id: 'rangeHighlighter',
+          beforeDraw: (chart) => {
+              const { ctx, chartArea: { left, right }, scales: { x } } = chart;
+              ctx.save();
+              const ranges = [
+                  { start: '2025-02-19', end: '2025-04-21', color: 'rgba(255, 255, 255, 0.1)' },
+                  { start: '2025-05-06', end: '2025-06-19', color: 'rgba(255, 255, 255, 0.1)' }
+              ];
+              ranges.forEach(({ start, end, color }) => {
+                  const startX = x.getPixelForValue(new Date(start));
+                  const endX = x.getPixelForValue(new Date(end));
+                  ctx.fillStyle = color;
+                  ctx.fillRect(startX, chart.chartArea.top, endX - startX, chart.chartArea.bottom - chart.chartArea.top);
+              });
+              ctx.restore();
+          }
+      });
+
+      // Identify last actual data point
+      var lastIndex = weights.length - 1;
+      var lastWeight = weights[lastIndex];
+      var lastDate = new Date(dates[lastIndex]);
+
+      // Calculate exponentially weighted moving average trend
+      let trend = 0;
+      if (weights.length >= 4) {
+          let alpha = 0.5; // Smoothing factor: higher values give more weight to recent changes
+          let changes = [];
+          for (let i = 1; i < weights.length; i++) {
+              changes.push(weights[i] - weights[i - 1]);
+          }
+
+          // Reverse changes to apply weights from most recent
+          changes.reverse();
+
+          let weightedSum = 0;
+          let totalWeight = 0;
+          for (let i = 0; i < changes.length; i++) {
+              let weight = Math.pow(1 - alpha, i);
+              weightedSum += changes[i] * weight;
+              totalWeight += weight;
+          }
+
+          trend = weightedSum / totalWeight;
+      }
+
+      // Generate future dates and projected weights
+      var projectionWeeks = 6;  // Weeks into the future
+      var futureDates = [];
+      var futureWeights = [];
+
+      for (let i = -2; i <= projectionWeeks; i++) {  // Start at 0 instead of 1
+          let futureDate = new Date(lastDate);
+          futureDate.setDate(futureDate.getDate() + i * 7);
+          futureDates.push(futureDate);
+          futureWeights.push(lastWeight + trend * i);
+      }
+
+      // Convert future dates to the correct format
+      var futureDateLabels = futureDates.map(date => date.toISOString().split('T')[0]);
+
+      // Add projection dataset
+      var weightChart = new Chart(ctx, {
+          type: 'line',
+          data: {
+              labels: [...dates.map(date => new Date(date)), ...futureDates], // Extend x-axis
+              datasets: [
+                  {
+                      data: weights,
+                      borderColor: '#ffffff',
+                      pointBackgroundColor: '#58a6ff',
+                      pointBorderColor: '#ffffff',
+                      pointRadius: 5,
+                      pointHoverRadius: 7,
+                      fill: false
+                  },
+                  {
+                      label: "Projection",
+                      data: [...Array(weights.length).fill(null), ...futureWeights],
+                      borderColor: 'rgba(255, 255, 255, 0.5)',
+                      borderDash: [5, 5],  // Dashed line
+                      borderWidth: 1, // Line
+                      pointRadius: 0,  // No points for projections
+                      fill: false,
+                      hidden: false
+                  }
+              ]
+          },
+          options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              scales: {
+                  x: {
+                      type: 'time',
+                      time: {
+                          unit: 'month',
+                          displayFormats: {
+                              month: 'MMM yy'
+                          },
+                          tooltipFormat: 'MMM d, yyyy'
+                      },
+                      ticks: {
+                          color: '#c9d1d9',
+                          autoSkip: false,
+                          source: 'auto'
+                      },
+                      grid: {
+                          color: '#30363d'
+                      },
+                      min: minDate,
+                      max: new Date(maxDate).setMonth(maxDate.getMonth() + 2) // Extend x-axis
+                  },
+                  y: {
+                      ticks: {
+                          color: '#c9d1d9'
+                      },
+                      grid: {
+                          color: '#30363d'
+                      },
+                      min: 30,
+                      max: 70
+                  }
+              },
+              plugins: {
+                      legend: { display: false }, // Show legend for projection
+                  tooltip: {
+                      enabled: true,
+                      mode: 'nearest',
+                      intersect: true,
+                      backgroundColor: '#222e3d',
+                      titleColor: '#ffffff',
+                      bodyColor: '#ffffff',
+                      displayColors: false,
+                      position: 'nearest',
+                      yAlign: 'bottom',
+                      callbacks: {
+                          title: function(tooltipItems) {
+                              return tooltipItems[0].label;
+                          },
+                          label: function(tooltipItem) {
+                              const weight = tooltipItem.raw;
+                              if (weight === null) return '';
+                              const change = weightChanges[tooltipItem.dataIndex] || trend.toFixed(1) + ' kg';
+                              const bmi = (weight / (1.63 * 1.63)).toFixed(1).replace('.', ',');
+                              return `${weight.toFixed(1)} kg (${change}), BMI: ${bmi}`;
+                          }
+                      }
+                  }
+              }
+          }
+      });
+
+      document.getElementById('toggleProjection').addEventListener('change', function () {
+          const show = this.checked;
+          weightChart.data.datasets[1].hidden = !show;
+          weightChart.update();
+      });
+  </script>
+</body>
+</html>
